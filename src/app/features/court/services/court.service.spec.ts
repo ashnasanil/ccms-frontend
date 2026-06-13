@@ -3,6 +3,7 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { provideHttpClient } from '@angular/common/http';
 import { CourtService } from './court.service';
 import { CourtDashboard } from '../models/court-dashboard.model';
+import { CreateCaseResponse } from '../models/create-case.model';
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 
 describe('CourtService', () => {
@@ -46,5 +47,23 @@ describe('CourtService', () => {
     const req = httpMock.expectOne('/api/court/dashboard');
     expect(req.request.method).toBe('GET');
     req.flush(mockData);
+  });
+
+  it('should create a case', () => {
+    const mockResponse: CreateCaseResponse = {
+      caseNumber: 'CCMS-20260610-0001',
+      status: 'Pending'
+    };
+
+    const formData = new FormData();
+    formData.append('ComplainantName', 'Test Name');
+
+    service.createCase(formData).subscribe(data => {
+      expect(data).toEqual(mockResponse);
+    });
+
+    const req = httpMock.expectOne('/api/court/cases');
+    expect(req.request.method).toBe('POST');
+    req.flush(mockResponse);
   });
 });

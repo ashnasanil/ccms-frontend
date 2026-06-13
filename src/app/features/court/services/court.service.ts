@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { CourtDashboard } from '../models/court-dashboard.model';
+import { CreateCaseResponse } from '../models/create-case.model';
 
 @Injectable({
   providedIn: 'root'
@@ -14,5 +15,9 @@ export class CourtService {
 
   getDashboard(): Observable<CourtDashboard> {
     return this.http.get<CourtDashboard>(`${this.apiUrl}/dashboard`);
+  }
+
+  createCase(formData: FormData): Observable<CreateCaseResponse> {
+    return this.http.post<CreateCaseResponse>(`${this.apiUrl}/cases`, formData);
   }
 }

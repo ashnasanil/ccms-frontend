@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { CourtDashboard } from '../models/court-dashboard.model';
 import { CreateCaseResponse } from '../models/create-case.model';
+import { CaseList } from '../models/case-list.model';
 
 @Injectable({
   providedIn: 'root'
@@ -19,5 +20,9 @@ export class CourtService {
 
   createCase(formData: FormData): Observable<CreateCaseResponse> {
     return this.http.post<CreateCaseResponse>(`${this.apiUrl}/cases`, formData);
+  }
+
+  getCases(): Observable<CaseList[]> {
+    return this.http.get<CaseList[]>(`${this.apiUrl}/cases`);
   }
 }

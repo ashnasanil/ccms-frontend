@@ -66,4 +66,18 @@ describe('CourtService', () => {
     expect(req.request.method).toBe('POST');
     req.flush(mockResponse);
   });
+
+  it('should fetch all cases', () => {
+    const mockCases: CaseList[] = [
+      { caseNumber: 'CCMS-001', defendantName: 'Bob', orderType: 'FreezeAccount', status: 'Pending', createdDate: '2026-06-11' }
+    ];
+
+    service.getCases().subscribe(data => {
+      expect(data).toEqual(mockCases);
+    });
+
+    const req = httpMock.expectOne('/api/court/cases');
+    expect(req.request.method).toBe('GET');
+    req.flush(mockCases);
+  });
 });

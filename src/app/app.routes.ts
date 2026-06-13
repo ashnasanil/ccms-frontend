@@ -10,6 +10,10 @@ export const routes: Routes = [
     loadComponent: () => import('./features/court/components/create-case/create-case.component').then(m => m.CreateCaseComponent)
   },
   {
+    path: 'court/cases',
+    loadComponent: () => import('./features/court/components/case-list/case-list.component').then(m => m.CaseListComponent)
+  },
+  {
     path: '',
     redirectTo: 'court/dashboard',
     pathMatch: 'full'

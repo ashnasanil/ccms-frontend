@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormControl } from '@angular/forms';
 import { RouterModule } from '@angular/router';
@@ -14,6 +14,7 @@ import { CaseList } from '../../models/case-list.model';
 })
 export class CaseListComponent implements OnInit {
   private courtService = inject(CourtService);
+  private cdr = inject(ChangeDetectorRef);
 
   // Data
   allCases: CaseList[] = [];
@@ -40,6 +41,7 @@ export class CaseListComponent implements OnInit {
     
     this.searchControl.valueChanges.subscribe(term => {
       this.applyFilterAndSort(term || '');
+      this.cdr.markForCheck();
     });
   }
 
@@ -52,11 +54,13 @@ export class CaseListComponent implements OnInit {
         this.allCases = data;
         this.applyFilterAndSort(this.searchControl.value || '');
         this.isLoading = false;
+        this.cdr.markForCheck();
       },
       error: (err) => {
         console.error('Error fetching cases', err);
         this.errorMessage = 'Failed to load case list.';
         this.isLoading = false;
+        this.cdr.markForCheck();
       }
     });
   }

@@ -80,4 +80,20 @@ describe('CourtService', () => {
     expect(req.request.method).toBe('GET');
     req.flush(mockCases);
   });
+
+  it('should fetch case by ID', () => {
+    const mockCase: CaseDetail = {
+      caseNumber: 'CCMS-001', complainantName: 'A', defendantName: 'B', aadhaarNumber: '1', panNumber: '2',
+      accountNumber: '3', bankName: 'Bank', orderType: 'Freeze', status: 'Pending', createdDate: '2026-06-13',
+      documents: []
+    };
+
+    service.getCaseById('CCMS-001').subscribe(data => {
+      expect(data).toEqual(mockCase);
+    });
+
+    const req = httpMock.expectOne('/api/court/cases/CCMS-001');
+    expect(req.request.method).toBe('GET');
+    req.flush(mockCase);
+  });
 });

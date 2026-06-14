@@ -14,6 +14,10 @@ export const routes: Routes = [
     loadComponent: () => import('./features/court/components/case-list/case-list.component').then(m => m.CaseListComponent)
   },
   {
+    path: 'court/cases/:id',
+    loadComponent: () => import('./features/court/components/case-detail/case-detail.component').then(m => m.CaseDetailComponent)
+  },
+  {
     path: '',
     redirectTo: 'court/dashboard',
     pathMatch: 'full'

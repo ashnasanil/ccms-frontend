@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { CourtDashboard } from '../models/court-dashboard.model';
 import { CreateCaseResponse } from '../models/create-case.model';
 import { CaseList } from '../models/case-list.model';
+import { CaseDetail } from '../models/case-detail.model';
 
 @Injectable({
   providedIn: 'root'
@@ -24,5 +25,9 @@ export class CourtService {
 
   getCases(): Observable<CaseList[]> {
     return this.http.get<CaseList[]>(`${this.apiUrl}/cases`);
+  }
+
+  getCaseById(id: string): Observable<CaseDetail> {
+    return this.http.get<CaseDetail>(`${this.apiUrl}/cases/${id}`);
   }
 }

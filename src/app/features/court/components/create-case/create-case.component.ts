@@ -1,6 +1,7 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { CourtService } from '../../services/court.service';
 import { OrderType, CreateCaseResponse } from '../../models/create-case.model';
 
@@ -14,6 +15,8 @@ import { OrderType, CreateCaseResponse } from '../../models/create-case.model';
 export class CreateCaseComponent implements OnInit {
   private fb = inject(FormBuilder);
   private courtService = inject(CourtService);
+  private cdr = inject(ChangeDetectorRef);
+  private router = inject(Router);
 
   caseForm!: FormGroup;
   
@@ -25,7 +28,6 @@ export class CreateCaseComponent implements OnInit {
   // State
   isSubmitting = false;
   errorMessage = '';
-  successResponse: CreateCaseResponse | null = null;
   
   // Enum exposure for template
   OrderType = OrderType;
@@ -61,6 +63,7 @@ export class CreateCaseComponent implements OnInit {
         freezeAmountControl?.setValue('');
       }
       freezeAmountControl?.updateValueAndValidity();
+      this.cdr.markForCheck();
     });
   }
 
@@ -111,26 +114,15 @@ export class CreateCaseComponent implements OnInit {
 
     this.courtService.createCase(formData).subscribe({
       next: (response) => {
-        this.successResponse = response;
         this.isSubmitting = false;
+        this.router.navigate(['/court/cases', response.caseNumber]);
       },
       error: (err) => {
         console.error('Error creating case', err);
         this.errorMessage = err.error?.message || 'An error occurred while creating the case.';
         this.isSubmitting = false;
+        this.cdr.markForCheck();
       }
     });
-  }
-
-  resetForm(): void {
-    this.successResponse = null;
-    this.caseForm.reset({
-      orderType: OrderType.FreezeAccount
-    });
-    this.courtOrderFile = null;
-    this.aadhaarCopyFile = null;
-    this.panCopyFile = null;
-    this.errorMessage = '';
-    this.isSubmitting = false;
   }
 }

@@ -1,0 +1,98 @@
+<div class="detail-container" *ngIf="caseDetail">
+  <div class="header">
+    <h1>Case {{ caseDetail.caseNumber }}</h1>
+    <span class="status-badge status-{{caseDetail.status}}">{{ CaseStatus[caseDetail.status] }}</span>
+  </div>
+
+  <div class="cards-grid">
+    <!-- Defendant Details -->
+    <mat-card class="detail-card">
+      <mat-card-header>
+        <mat-card-title>Defendant Details</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <p><strong>Name:</strong> {{ caseDetail.defendantName }}</p>
+        <p><strong>Aadhaar:</strong> {{ caseDetail.defendantAadhaar || 'N/A' }}</p>
+        <p><strong>PAN:</strong> {{ caseDetail.defendantPAN || 'N/A' }}</p>
+        <p><strong>Account Number:</strong> {{ caseDetail.defendantAccountNumber || 'N/A' }}</p>
+        <p><strong>Bank Name:</strong> {{ caseDetail.defendantBankName || 'N/A' }}</p>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Validation & Matched Account -->
+    <mat-card class="detail-card">
+      <mat-card-header>
+        <mat-card-title>Validation & Account Match</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <p><strong>Matched Account:</strong> {{ caseDetail.matchedAccountNumber || 'Not Matched' }}</p>
+        <p><strong>Matched Status:</strong> {{ caseDetail.matchedAccountStatus || 'N/A' }}</p>
+        <p><strong>Account Balance:</strong> {{ caseDetail.matchedBalance !== null ? (caseDetail.matchedBalance | currency:'INR') : 'Unknown' }}</p>
+        <p><strong>Order Type:</strong> {{ OrderType[caseDetail.orderType] }}</p>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Attachments -->
+    <mat-card class="detail-card">
+      <mat-card-header>
+        <mat-card-title>Uploaded Documents</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <mat-list>
+          <mat-list-item *ngFor="let doc of caseDetail.attachments">
+            <mat-icon matListItemIcon>description</mat-icon>
+            <div matListItemTitle>{{ doc.fileName }}</div>
+            <a mat-icon-button [href]="doc.filePath" target="_blank" download>
+              <mat-icon>download</mat-icon>
+            </a>
+          </mat-list-item>
+          <mat-list-item *ngIf="caseDetail.attachments.length === 0">
+            No documents uploaded.
+          </mat-list-item>
+        </mat-list>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Existing Response -->
+    <mat-card class="detail-card" *ngIf="caseDetail.existingResponse">
+      <mat-card-header>
+        <mat-card-title>Submitted Response</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <p><strong>Response Type:</strong> {{ ResponseType[caseDetail.existingResponse.responseType] }}</p>
+        <p *ngIf="caseDetail.existingResponse.freezeAmount !== null"><strong>Freeze Amount:</strong> {{ caseDetail.existingResponse.freezeAmount | currency:'INR' }}</p>
+        <p *ngIf="caseDetail.existingResponse.balanceAmount !== null"><strong>Balance Amount:</strong> {{ caseDetail.existingResponse.balanceAmount | currency:'INR' }}</p>
+        <p><strong>Remarks:</strong> {{ caseDetail.existingResponse.remarks }}</p>
+        <p><strong>Responded By:</strong> {{ caseDetail.existingResponse.respondedBy }} on {{ caseDetail.existingResponse.respondedAt | date:'medium' }}</p>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Response Form -->
+    <mat-card class="detail-card form-card" *ngIf="showResponseForm">
+      <mat-card-header>
+        <mat-card-title>Submit Response</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <form [formGroup]="responseForm" (ngSubmit)="submitResponse()">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>{{ caseDetail.orderType === OrderType.FreezeAccount ? 'Freeze Amount' : 'Balance Amount' }}</mat-label>
+            <input matInput type="number" formControlName="amount" placeholder="Enter amount">
+            <mat-error *ngIf="responseForm.get('amount')?.hasError('required')">Amount is required</mat-error>
+            <mat-error *ngIf="responseForm.get('amount')?.hasError('min')">Amount cannot be negative</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Remarks</mat-label>
+            <textarea matInput formControlName="remarks" rows="3" placeholder="Enter remarks"></textarea>
+            <mat-error *ngIf="responseForm.get('remarks')?.hasError('required')">Remarks are required</mat-error>
+          </mat-form-field>
+
+          <button mat-raised-button color="primary" type="submit" [disabled]="responseForm.invalid || isSubmitting">
+            {{ isSubmitting ? 'Submitting...' : 'Submit Response' }}
+          </button>
+        </form>
+      </mat-card-content>
+    </mat-card>
+
+  </div>
+</div>

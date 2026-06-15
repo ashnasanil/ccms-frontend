@@ -35,8 +35,8 @@ pipeline {
                 bat 'az aks get-credentials -n %AKS% -g %RG% --overwrite-existing'
                 powershell '(Get-Content k8s/03-frontend.yaml) -replace "<ACR_NAME>", $env:ACR | Set-Content $env:TEMP\\03-frontend.yaml'
                 bat 'kubectl apply -f %TEMP%\\03-frontend.yaml'
-                bat 'kubectl set image deployment/ccms-frontend ccms-frontend=%ACR%.azurecr.io/%IMAGE%:%BUILD_NUMBER%'
-                bat 'kubectl rollout status deployment/ccms-frontend --timeout=120s'
+                bat 'kubectl set image deployment/ccms-frontend ccms-frontend=%ACR%.azurecr.io/%IMAGE%:%BUILD_NUMBER% -n ccms-prod'
+                bat 'kubectl rollout status deployment/ccms-frontend -n ccms-prod --timeout=120s'
             }
         }
     }

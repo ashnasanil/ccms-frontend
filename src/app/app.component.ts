@@ -10,9 +10,7 @@ import { MatListModule } from '@angular/material/list';
   selector: 'app-root',
   standalone: true,
   imports: [
-    RouterOutlet, 
-    RouterLink, 
-    RouterLinkActive,
+    RouterOutlet,
     MatToolbarModule,
     MatButtonModule,
     MatSidenavModule,

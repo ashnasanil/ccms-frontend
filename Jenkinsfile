@@ -1,64 +1,48 @@
 pipeline {
     agent any
-
     environment {
-        // Azure Settings
-        ACR = 'ccmsacr'
-        RG = 'ccms-rg'
-        AKS = 'ccms-aks'
-        
-        // Image Settings
-        IMAGE = 'ccms-frontend'
-        IMAGE_NAME = "${ACR}.azurecr.io/${IMAGE}"
-        TAG = "${env.BUILD_NUMBER}"
-        
-        // Jenkins Credentials IDs
-        ACR_CREDENTIAL_ID = 'acr-credentials'
-        AKS_CREDENTIAL_ID = 'aks-credentials'
-        
-        // Ingress Settings
-        INGRESS_HOST = 'ccms.local'
+        ACR     = 'ccmsacr'
+        RG      = 'ccms-rg'
+        AKS     = 'ccms-aks'
+        IMAGE   = 'ccms-frontend'
+        AZ_CLIENT_ID     = credentials('azure-client-id')
+        AZ_CLIENT_SECRET = credentials('azure-client-secret')
+        AZ_TENANT_ID     = credentials('azure-tenant-id')
     }
-
     stages {
         stage('Checkout') {
+            steps { checkout scm }
+        }
+        stage('Build image') {
             steps {
-                checkout scm
+                bat 'docker build --platform linux/amd64 -t %ACR%.azurecr.io/%IMAGE%:%BUILD_NUMBER% -t %ACR%.azurecr.io/%IMAGE%:latest .'
             }
         }
-
-        stage('Build & Push Image') {
+        stage('Login to Azure') {
             steps {
-                script {
-                    docker.withRegistry("https://${ACR}.azurecr.io", ACR_CREDENTIAL_ID) {
-                        def app = docker.build("${IMAGE_NAME}:${TAG}", "-f Dockerfile .")
-                        app.push()
-                    }
-                }
+                bat 'az login --service-principal -u %AZ_CLIENT_ID% -p %AZ_CLIENT_SECRET% --tenant %AZ_TENANT_ID%'
+                bat 'az acr login -n %ACR%'
             }
         }
-
+        stage('Push to ACR') {
+            steps {
+                bat 'docker push %ACR%.azurecr.io/%IMAGE%:%BUILD_NUMBER%'
+                bat 'docker push %ACR%.azurecr.io/%IMAGE%:latest'
+            }
+        }
         stage('Deploy to AKS') {
             steps {
-                withKubeConfig([credentialsId: AKS_CREDENTIAL_ID]) {
-                    sh """
-                    # 1. Update image tags
-                    sed -i "s|ccmsacr.azurecr.io/ccms-frontend:latest|${IMAGE_NAME}:${TAG}|g" k8s/03-frontend.yaml
-                    
-                    # 2. Update Ingress Host
-                    sed -i "s|#{ingressHost}#|${INGRESS_HOST}|g" k8s/03-frontend.yaml
-                    
-                    # 3. Apply manifests to AKS
-                    kubectl apply -f k8s/03-frontend.yaml
-                    """
-                }
+                bat 'az aks get-credentials -n %AKS% -g %RG% --overwrite-existing'
+                powershell '(Get-Content k8s/03-frontend.yaml) -replace "<ACR_NAME>", $env:ACR | Set-Content $env:TEMP\\03-frontend.yaml'
+                bat 'kubectl apply -f %TEMP%\\03-frontend.yaml'
+                bat 'kubectl set image deployment/ccms-frontend ccms-frontend=%ACR%.azurecr.io/%IMAGE%:%BUILD_NUMBER%'
+                bat 'kubectl rollout status deployment/ccms-frontend --timeout=120s'
             }
         }
     }
-    
     post {
-        always {
-            cleanWs()
-        }
+        success { echo "ccms-frontend ${BUILD_NUMBER} deployed to AKS." }
+        failure { echo 'ccms-frontend pipeline failed.' }
+        always  { bat 'az logout || exit 0' }
     }
 }

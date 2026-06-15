@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
       - name: ccms-frontend
-        image: ccmsacr.azurecr.io/ccms-frontend:latest
+        image: <ACR_NAME>.azurecr.io/ccms-frontend:latest
         ports:
         - containerPort: 80
         resources:

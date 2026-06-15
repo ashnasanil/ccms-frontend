@@ -1,0 +1,51 @@
+.detail-container {
+  padding: 16px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+h1 {
+  margin: 0;
+}
+
+.status-badge {
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 14px;
+  font-weight: 500;
+  background: #e0e0e0;
+}
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 24px;
+}
+
+.detail-card {
+  height: 100%;
+}
+
+.form-card {
+  border: 2px solid #3f51b5;
+}
+
+.full-width {
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+p {
+  margin-bottom: 8px;
+}
+
+strong {
+  color: #555;
+}

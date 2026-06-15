@@ -1,0 +1,57 @@
+<div class="inbox-container">
+  <h1>Case Inbox</h1>
+
+  <mat-tab-group (selectedTabChange)="onTabChange($event)">
+    <mat-tab label="Awaiting Action">
+      <ng-container *ngTemplateOutlet="caseTable; context: { $implicit: awaitingCases }"></ng-container>
+    </mat-tab>
+
+    <mat-tab label="Completed">
+      <ng-container *ngTemplateOutlet="caseTable; context: { $implicit: completedCases }"></ng-container>
+    </mat-tab>
+
+    <mat-tab label="Auto Resolved">
+      <ng-container *ngTemplateOutlet="caseTable; context: { $implicit: autoResolvedCases }"></ng-container>
+    </mat-tab>
+
+    <mat-tab label="Pending Batch">
+      <ng-container *ngTemplateOutlet="caseTable; context: { $implicit: pendingBatchCases }"></ng-container>
+    </mat-tab>
+  </mat-tab-group>
+</div>
+
+<ng-template #caseTable let-cases>
+  <div class="table-container mat-elevation-z8">
+    <table mat-table [dataSource]="cases">
+
+      <ng-container matColumnDef="caseNumber">
+        <th mat-header-cell *matHeaderCellDef> Case Number </th>
+        <td mat-cell *matCellDef="let element"> {{element.caseNumber}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="defendantName">
+        <th mat-header-cell *matHeaderCellDef> Defendant Name </th>
+        <td mat-cell *matCellDef="let element"> {{element.defendantName}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="orderType">
+        <th mat-header-cell *matHeaderCellDef> Order Type </th>
+        <td mat-cell *matCellDef="let element"> {{getOrderTypeName(element.orderType)}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef> Actions </th>
+        <td mat-cell *matCellDef="let element">
+          <button mat-button color="primary" (click)="viewCase(element.id)">View Case</button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell" colspan="4">No cases found matching the criteria.</td>
+      </tr>
+    </table>
+  </div>
+</ng-template>

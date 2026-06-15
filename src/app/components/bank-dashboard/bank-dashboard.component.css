@@ -1,0 +1,46 @@
+.dashboard-container {
+  padding: 16px;
+}
+
+h1 {
+  margin-bottom: 24px;
+}
+
+.summary-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.summary-card {
+  flex: 1;
+  min-width: 220px;
+}
+
+.summary-card mat-icon {
+  font-size: 40px;
+  height: 40px;
+  width: 40px;
+  opacity: 0.7;
+}
+
+.count {
+  font-size: 48px;
+  font-weight: 300;
+  text-align: center;
+  margin-top: 16px;
+}
+
+.awaiting { border-top: 4px solid #ff9800; }
+.pending-batch { border-top: 4px solid #2196f3; }
+.completed { border-top: 4px solid #4caf50; }
+.auto-resolved { border-top: 4px solid #9c27b0; }
+
+.batch-section {
+  max-width: 600px;
+}
+
+.batch-card {
+  margin-bottom: 16px;
+}

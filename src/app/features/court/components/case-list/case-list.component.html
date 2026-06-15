@@ -1,0 +1,125 @@
+<div class="list-container">
+  <header class="list-header">
+    <div class="header-content">
+      <h1>All Court Cases</h1>
+      <p>View and manage all registered cases.</p>
+    </div>
+    <div class="header-actions">
+      <a routerLink="/court/cases/new" class="btn-primary">Create New Case</a>
+    </div>
+  </header>
+
+  <div class="controls-toolbar">
+    <div class="search-box">
+      <span class="search-icon">🔍</span>
+      <input type="text" [formControl]="searchControl" placeholder="Search cases...">
+    </div>
+    <div class="page-size-selector">
+      <label for="pageSize">Rows per page:</label>
+      <select id="pageSize" (change)="changePageSize($event)">
+        <option value="5">5</option>
+        <option value="10" selected>10</option>
+        <option value="25">25</option>
+        <option value="50">50</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="table-card">
+    @if (isLoading) {
+      <div class="state-container loading-state">
+        <div class="spinner"></div>
+        <p>Loading cases...</p>
+      </div>
+    } @else if (errorMessage) {
+      <div class="state-container error-state">
+        <p class="error-text">⚠️ {{ errorMessage }}</p>
+        <button class="btn-secondary" (click)="loadCases()">Retry</button>
+      </div>
+    } @else if (filteredCases.length === 0) {
+      <div class="state-container empty-state">
+        <p>No cases found matching your criteria.</p>
+      </div>
+    } @else {
+      <div class="table-responsive">
+        <table class="ccms-table">
+          <thead>
+            <tr>
+              <th (click)="sortBy('caseNumber')" class="sortable">
+                Case Number
+                @if (sortColumn === 'caseNumber') {
+                  <span class="sort-icon">{{ sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                }
+              </th>
+              <th (click)="sortBy('defendantName')" class="sortable">
+                Defendant Name
+                @if (sortColumn === 'defendantName') {
+                  <span class="sort-icon">{{ sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                }
+              </th>
+              <th (click)="sortBy('orderType')" class="sortable">
+                Order Type
+                @if (sortColumn === 'orderType') {
+                  <span class="sort-icon">{{ sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                }
+              </th>
+              <th (click)="sortBy('status')" class="sortable">
+                Status
+                @if (sortColumn === 'status') {
+                  <span class="sort-icon">{{ sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                }
+              </th>
+              <th (click)="sortBy('createdDate')" class="sortable">
+                Created Date
+                @if (sortColumn === 'createdDate') {
+                  <span class="sort-icon">{{ sortDirection === 'asc' ? '↑' : '↓' }}</span>
+                }
+              </th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (caseItem of paginatedCases; track caseItem.caseNumber) {
+              <tr>
+                <td class="font-mono">{{ caseItem.caseNumber }}</td>
+                <td class="font-bold">{{ caseItem.defendantName }}</td>
+                <td>
+                  <span class="type-badge" [class.freeze]="caseItem.orderType === 'FreezeAccount'">
+                    {{ caseItem.orderType }}
+                  </span>
+                </td>
+                <td>
+                  <span class="status-badge" [class.pending]="caseItem.status === 'Pending'">
+                    {{ caseItem.status }}
+                  </span>
+                </td>
+                <td>{{ caseItem.createdDate | date:'mediumDate' }}</td>
+                <td>
+                  <!-- Note: Assuming details view is /court/cases/:id -->
+                  <a [routerLink]="['/court/cases', caseItem.caseNumber]" class="btn-action">View</a>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      <div class="pagination">
+        <div class="pagination-info">
+          Showing {{ (currentPage - 1) * pageSize + 1 }} to 
+          {{ Math.min(currentPage * pageSize, filteredCases.length) }} of {{ filteredCases.length }} entries
+        </div>
+        <div class="pagination-controls">
+          <button (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1" class="page-btn">Previous</button>
+          
+          <div class="page-numbers">
+            Page {{ currentPage }} of {{ totalPages }}
+          </div>
+
+          <button (click)="changePage(currentPage + 1)" [disabled]="currentPage === totalPages" class="page-btn">Next</button>
+        </div>
+      </div>
+    }
+  </div>
+</div>

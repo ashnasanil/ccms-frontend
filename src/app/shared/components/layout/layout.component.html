@@ -1,0 +1,60 @@
+<mat-sidenav-container class="sidenav-container">
+  <mat-sidenav #sidenav mode="side" opened class="sidenav glass-panel">
+    <div class="sidenav-header">
+      <div class="logo">
+        <mat-icon color="primary">gavel</mat-icon>
+        <span>CCMS</span>
+      </div>
+    </div>
+    
+    <mat-nav-list>
+      @if (isCourtOfficer) {
+        <h3 matSubheader>Court Portal</h3>
+        <a mat-list-item routerLink="/court-dashboard" routerLinkActive="active-link">
+          <mat-icon matListItemIcon>dashboard</mat-icon>
+          <div matListItemTitle>Dashboard</div>
+        </a>
+        <a mat-list-item routerLink="/court/cases" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}">
+          <mat-icon matListItemIcon>list</mat-icon>
+          <div matListItemTitle>All Cases</div>
+        </a>
+        <a mat-list-item routerLink="/court/cases/new" routerLinkActive="active-link">
+          <mat-icon matListItemIcon>add_circle</mat-icon>
+          <div matListItemTitle>Create Case</div>
+        </a>
+
+        <mat-divider class="nav-divider"></mat-divider>
+      }
+
+      @if (isBankOfficer) {
+        <h3 matSubheader>Bank Portal</h3>
+        <a mat-list-item routerLink="/bank-dashboard" routerLinkActive="active-link">
+          <mat-icon matListItemIcon>account_balance</mat-icon>
+          <div matListItemTitle>Dashboard</div>
+        </a>
+        <a mat-list-item routerLink="/bank/inbox" routerLinkActive="active-link">
+          <mat-icon matListItemIcon>inbox</mat-icon>
+          <div matListItemTitle>Case Inbox</div>
+        </a>
+      }
+    </mat-nav-list>
+  </mat-sidenav>
+
+  <mat-sidenav-content class="sidenav-content">
+    <mat-toolbar class="top-toolbar glass-panel">
+      <button mat-icon-button (click)="sidenav.toggle()" class="menu-button">
+        <mat-icon>menu</mat-icon>
+      </button>
+      
+      <span class="spacer"></span>
+      
+      <button mat-flat-button color="warn" (click)="onLogout()">
+        <mat-icon>logout</mat-icon> Logout
+      </button>
+    </mat-toolbar>
+
+    <div class="main-content">
+      <router-outlet></router-outlet>
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>

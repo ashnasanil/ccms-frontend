@@ -1,0 +1,179 @@
+<div class="detail-container">
+  <div class="detail-header">
+    <div class="header-content">
+      <a mat-button color="primary" routerLink="/court/cases" class="back-link">
+        <mat-icon>arrow_back</mat-icon> Back to Cases
+      </a>
+      <h1>Case Details</h1>
+      @if (caseDetail) {
+        <p>Viewing comprehensive information for <strong>{{ caseDetail.caseNumber }}</strong></p>
+      }
+    </div>
+  </div>
+
+  @if (isLoading) {
+    <div class="state-container">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>Loading case data...</p>
+    </div>
+  } @else if (errorMessage) {
+    <div class="state-container error-state">
+      <mat-icon color="warn">error_outline</mat-icon>
+      <p class="error-text">{{ errorMessage }}</p>
+      <a mat-flat-button color="primary" routerLink="/court/cases">Return to List</a>
+    </div>
+  } @else if (caseDetail) {
+    
+    <!-- Top Status Banner -->
+    <mat-card class="status-banner glass-panel">
+      <div class="status-item">
+        <span class="label">Status</span>
+        <span class="badge status-badge" [class.pending]="caseDetail.status === 'Pending'">{{ caseDetail.status }}</span>
+      </div>
+      <div class="status-item">
+        <span class="label">Created On</span>
+        <span class="value">{{ caseDetail.createdDate | date:'mediumDate' }}</span>
+      </div>
+      <div class="status-item">
+        <span class="label">Order Type</span>
+        <span class="badge type-badge" [class.freeze]="caseDetail.orderType === 'FreezeAccount'">{{ caseDetail.orderType }}</span>
+      </div>
+    </mat-card>
+
+    <!-- Main Content Grid -->
+    <div class="details-grid">
+      
+      <!-- Parties Section -->
+      <mat-card class="detail-card glass-panel">
+        <mat-card-header>
+          <div mat-card-avatar><mat-icon color="primary">group</mat-icon></div>
+          <mat-card-title>Involved Parties</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="data-group">
+            <span class="data-label">Complainant Name</span>
+            <span class="data-value">{{ caseDetail.complainantName }}</span>
+          </div>
+          <hr class="divider">
+          <div class="data-group">
+            <span class="data-label">Defendant Name</span>
+            <span class="data-value font-bold">{{ caseDetail.defendantName }}</span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Identity & Banking -->
+      <mat-card class="detail-card glass-panel">
+        <mat-card-header>
+          <div mat-card-avatar><mat-icon color="primary">lock</mat-icon></div>
+          <mat-card-title>Identity & Banking</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="data-group">
+            <span class="data-label">Aadhaar Number</span>
+            <span class="data-value font-mono">{{ caseDetail.aadhaarNumber }}</span>
+          </div>
+          <div class="data-group">
+            <span class="data-label">PAN Number</span>
+            <span class="data-value font-mono">{{ caseDetail.panNumber }}</span>
+          </div>
+          <div class="data-group">
+            <span class="data-label">Account Number</span>
+            <span class="data-value font-mono">{{ caseDetail.accountNumber }}</span>
+          </div>
+          <div class="data-group">
+            <span class="data-label">Bank Name</span>
+            <span class="data-value">{{ caseDetail.bankName }}</span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Order Specifics -->
+      <mat-card class="detail-card glass-panel">
+        <mat-card-header>
+          <div mat-card-avatar><mat-icon color="primary">gavel</mat-icon></div>
+          <mat-card-title>Order Specifics</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="data-group">
+            <span class="data-label">Requested Action</span>
+            <span class="data-value">{{ caseDetail.orderType }}</span>
+          </div>
+          @if (caseDetail.freezeAmount) {
+            <div class="data-group">
+              <span class="data-label">Freeze Amount</span>
+              <span class="data-value highlight">₹{{ caseDetail.freezeAmount | number:'1.2-2' }}</span>
+            </div>
+          }
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Documents -->
+      <mat-card class="detail-card glass-panel">
+        <mat-card-header>
+          <div mat-card-avatar><mat-icon color="primary">description</mat-icon></div>
+          <mat-card-title>Uploaded Documents</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          @if (caseDetail.attachments && caseDetail.attachments.length > 0) {
+            <mat-list>
+              @for (doc of caseDetail.attachments; track doc.fileName) {
+                <mat-list-item>
+                  <mat-icon matListItemIcon color="primary">description</mat-icon>
+                  <div matListItemTitle>{{ doc.fileName }}</div>
+                  <a mat-icon-button [href]="getAttachmentUrl(doc.filePath)" target="_blank" download>
+                    <mat-icon>download</mat-icon>
+                  </a>
+                </mat-list-item>
+              }
+            </mat-list>
+          } @else {
+            <p class="empty-text">No documents attached to this case.</p>
+          }
+        </mat-card-content>
+      </mat-card>
+
+    </div>
+
+    <!-- Bank Response Section -->
+    @if (caseDetail.bankResponse) {
+      <mat-card class="detail-card full-width mt-4 glass-panel">
+        <mat-card-header>
+          <div mat-card-avatar><mat-icon color="primary">account_balance</mat-icon></div>
+          <mat-card-title>Official Bank Response</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="data-group">
+            <span class="data-label">Matched Account Number</span>
+            <span class="data-value">{{ caseDetail.bankResponse.accountNumber || 'N/A' }}</span>
+          </div>
+          @if (caseDetail.bankResponse.balance != null) {
+            <div class="data-group">
+              <span class="data-label">Account Balance</span>
+              <span class="data-value highlight">₹{{ caseDetail.bankResponse.balance | number:'1.2-2' }}</span>
+            </div>
+          }
+          @if (caseDetail.bankResponse.freezeAmount != null) {
+            <div class="data-group">
+              <span class="data-label">Applied Freeze Amount</span>
+              <span class="data-value highlight">₹{{ caseDetail.bankResponse.freezeAmount | number:'1.2-2' }}</span>
+            </div>
+          }
+          <div class="data-group">
+            <span class="data-label">Account Status</span>
+            <span class="data-value">{{ caseDetail.bankResponse.accountStatus || 'N/A' }}</span>
+          </div>
+          <div class="data-group mt-2">
+            <span class="data-label">Remarks</span>
+            <span class="data-value">{{ caseDetail.bankResponse.remarks || 'No remarks provided.' }}</span>
+          </div>
+          <div class="data-group mt-2">
+            <span class="data-label">Responded At</span>
+            <span class="data-value">{{ caseDetail.bankResponse.respondedAt | date:'medium' }}</span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    }
+
+  }
+</div>

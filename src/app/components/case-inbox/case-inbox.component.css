@@ -1,0 +1,31 @@
+.inbox-container {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.inbox-header {
+  margin-bottom: 24px;
+}
+
+.tab-card {
+  padding: 0;
+}
+
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.ccms-table {
+  width: 100%;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 48px;
+}
+
+.empty-message {
+  color: #666;
+}

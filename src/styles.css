@@ -1,1 +1,95 @@
 /* You can add global styles to this file, and also import other style files */
+
+:root {
+  /* Minimal Light Theme Variables */
+  --bg-main: #F9FAFB;
+  --bg-panel: rgba(255, 255, 255, 0.85);
+  --bg-card: #FFFFFF;
+  --glass-border: rgba(0, 0, 0, 0.05);
+  
+  --text-main: #111827;
+  --text-muted: #6B7280;
+  
+  --primary-glow: rgba(56, 189, 248, 0.1);
+  --secondary-glow: rgba(129, 140, 248, 0.1);
+  
+  --success: #059669;
+  --danger: #DC2626;
+  --warning: #D97706;
+  --info: #2563EB;
+  
+  --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+html, body { 
+  height: 100%; 
+  margin: 0; 
+  padding: 0;
+}
+
+body { 
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  background-image: 
+    radial-gradient(circle at 15% 50%, var(--primary-glow), transparent 25%),
+    radial-gradient(circle at 85% 30%, var(--secondary-glow), transparent 25%);
+  background-attachment: fixed;
+  background-size: cover;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Minimal Panel / Card utility */
+.glass-panel {
+  background: var(--bg-panel);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  box-shadow: var(--card-shadow);
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,0.15);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0,0,0,0.25);
+}
+
+/* Override Material typography & basics where needed */
+.mat-typography {
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+.text-success { color: var(--success); }
+.text-danger { color: var(--danger); }
+.text-warn { color: var(--warning); }
+.text-info { color: var(--info); }
+.text-primary { color: #3f51b5; } /* Material primary fallback */
+
+.font-bold { font-weight: bold; }
+.font-mono { font-family: monospace; }
+
+.status-badge, .type-badge {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.8em;
+  font-weight: 500;
+  display: inline-block;
+  background-color: #eee;
+  color: #333;
+}
+.type-badge.freeze {
+  background-color: #ffebee;
+  color: #c62828;
+}

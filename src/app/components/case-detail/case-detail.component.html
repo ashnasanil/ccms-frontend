@@ -1,0 +1,179 @@
+@if (caseDetail) {
+  <div class="detail-container">
+    <div class="header">
+      <a mat-icon-button color="primary" routerLink="/bank/inbox" class="back-link">
+        <mat-icon>arrow_back</mat-icon>
+      </a>
+      <div class="header-content">
+        <h1>Case {{ caseDetail.caseNumber }}</h1>
+        <span class="status-badge status-{{caseDetail.status}}">{{ CaseStatus[caseDetail.status] }}</span>
+      </div>
+    </div>
+
+    <div class="cards-grid">
+      <!-- Defendant Details -->
+      <mat-card class="detail-card glass-panel">
+        <mat-card-header>
+          <div mat-card-avatar><mat-icon color="primary">person</mat-icon></div>
+          <mat-card-title>Defendant Details</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="data-group">
+            <span class="data-label">Name</span>
+            <span class="data-value font-bold">{{ caseDetail.defendantName }}</span>
+          </div>
+          <div class="data-group">
+            <span class="data-label">Aadhaar</span>
+            <span class="data-value font-mono">{{ caseDetail.defendantAadhaar || 'N/A' }}</span>
+          </div>
+          <div class="data-group">
+            <span class="data-label">PAN</span>
+            <span class="data-value font-mono">{{ caseDetail.defendantPAN || 'N/A' }}</span>
+          </div>
+          <div class="data-group">
+            <span class="data-label">Account Number</span>
+            <span class="data-value font-mono">{{ caseDetail.defendantAccountNumber || 'N/A' }}</span>
+          </div>
+          <div class="data-group">
+            <span class="data-label">Bank Name</span>
+            <span class="data-value">{{ caseDetail.defendantBankName || 'N/A' }}</span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Validation & Matched Account -->
+      <mat-card class="detail-card glass-panel">
+        <mat-card-header>
+          <div mat-card-avatar><mat-icon color="primary">verified</mat-icon></div>
+          <mat-card-title>Validation & Account Match</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="data-group">
+            <span class="data-label">Matched Account</span>
+            <span class="data-value font-mono">{{ caseDetail.matchedAccountNumber || 'Not Matched' }}</span>
+          </div>
+          <div class="data-group">
+            <span class="data-label">Matched Status</span>
+            <span class="data-value">{{ caseDetail.matchedAccountStatus || 'N/A' }}</span>
+          </div>
+          <div class="data-group">
+            <span class="data-label">Account Balance</span>
+            <span class="data-value font-bold">{{ caseDetail.matchedBalance !== null ? (caseDetail.matchedBalance | currency:'INR') : 'Unknown' }}</span>
+          </div>
+          <div class="data-group">
+            <span class="data-label">Order Type</span>
+            <span class="data-value">
+              <span class="type-badge" [class.freeze]="OrderType[caseDetail.orderType] === 'Freeze'">
+                {{ OrderType[caseDetail.orderType] }}
+              </span>
+            </span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Attachments -->
+      <mat-card class="detail-card glass-panel">
+        <mat-card-header>
+          <div mat-card-avatar><mat-icon color="primary">attachment</mat-icon></div>
+          <mat-card-title>Uploaded Documents</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <mat-list>
+            @for (doc of caseDetail.attachments; track doc.fileName) {
+              <mat-list-item>
+                <mat-icon matListItemIcon color="primary">description</mat-icon>
+                <div matListItemTitle>{{ doc.fileName }}</div>
+                <a mat-icon-button [href]="getAttachmentUrl(doc.filePath)" target="_blank" download>
+                  <mat-icon>download</mat-icon>
+                </a>
+              </mat-list-item>
+            } @empty {
+              <mat-list-item>
+                <div class="empty-text">No documents uploaded.</div>
+              </mat-list-item>
+            }
+          </mat-list>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Existing Response -->
+      @if (caseDetail.existingResponse) {
+        <mat-card class="detail-card glass-panel">
+          <mat-card-header>
+            <div mat-card-avatar><mat-icon class="text-success">done_all</mat-icon></div>
+            <mat-card-title>Submitted Response</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="data-group">
+              <span class="data-label">Response Type</span>
+              <span class="data-value">{{ ResponseType[caseDetail.existingResponse.responseType] }}</span>
+            </div>
+            @if (caseDetail.existingResponse.freezeAmount !== null) {
+              <div class="data-group">
+                <span class="data-label">Freeze Amount</span>
+                <span class="data-value font-bold">{{ caseDetail.existingResponse.freezeAmount | currency:'INR' }}</span>
+              </div>
+            }
+            @if (caseDetail.existingResponse.balanceAmount !== null) {
+              <div class="data-group">
+                <span class="data-label">Balance Amount</span>
+                <span class="data-value font-bold">{{ caseDetail.existingResponse.balanceAmount | currency:'INR' }}</span>
+              </div>
+            }
+            <div class="data-group">
+              <span class="data-label">Remarks</span>
+              <span class="data-value">{{ caseDetail.existingResponse.remarks }}</span>
+            </div>
+            <div class="data-group">
+              <span class="data-label">Responded By</span>
+              <span class="data-value">{{ caseDetail.existingResponse.respondedBy }} on {{ caseDetail.existingResponse.respondedAt | date:'medium' }}</span>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      }
+
+      <!-- Response Form -->
+      @if (showResponseForm) {
+        <mat-card class="detail-card form-card glass-panel">
+          <mat-card-header>
+            <div mat-card-avatar><mat-icon color="accent">reply</mat-icon></div>
+            <mat-card-title>Submit Response</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <form [formGroup]="responseForm" (ngSubmit)="submitResponse()">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>{{ caseDetail.orderType === OrderType.Freeze ? 'Freeze Amount' : 'Balance Amount' }}</mat-label>
+                <input matInput type="number" formControlName="amount" placeholder="Enter amount">
+                @if (responseForm.get('amount')?.hasError('required')) {
+                  <mat-error>Amount is required</mat-error>
+                }
+                @if (responseForm.get('amount')?.hasError('min')) {
+                  <mat-error>Amount cannot be negative</mat-error>
+                }
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Remarks</mat-label>
+                <textarea matInput formControlName="remarks" rows="3" placeholder="Enter remarks"></textarea>
+                @if (responseForm.get('remarks')?.hasError('required')) {
+                  <mat-error>Remarks are required</mat-error>
+                }
+              </mat-form-field>
+
+              <div class="form-actions">
+                <button mat-flat-button color="primary" type="submit" [disabled]="responseForm.invalid || isSubmitting">
+                  @if (isSubmitting) {
+                    <mat-icon class="spinner-small">sync</mat-icon> Submitting...
+                  } @else {
+                    Submit Response
+                  }
+                </button>
+              </div>
+            </form>
+          </mat-card-content>
+        </mat-card>
+      }
+
+    </div>
+  </div>
+}

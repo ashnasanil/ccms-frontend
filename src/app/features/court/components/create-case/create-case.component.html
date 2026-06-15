@@ -1,0 +1,172 @@
+<div class="create-case-container">
+  
+    <mat-card class="form-card glass-panel">
+      <mat-card-header class="form-header">
+        <div mat-card-avatar class="header-icon"><mat-icon color="primary">add_circle</mat-icon></div>
+        <mat-card-title>Create New Case</mat-card-title>
+        <mat-card-subtitle>Register a new court order for validation and processing.</mat-card-subtitle>
+      </mat-card-header>
+
+      @if (errorMessage) {
+        <div class="error-banner">
+          <mat-icon color="warn">error_outline</mat-icon>
+          <span>{{ errorMessage }}</span>
+        </div>
+      }
+
+      <mat-card-content>
+        <form [formGroup]="caseForm" (ngSubmit)="onSubmit()" class="case-form">
+          
+          <!-- Complainant Section -->
+          <section class="form-section">
+            <h3 class="section-title">Complainant Details</h3>
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Complainant Name</mat-label>
+              <input matInput formControlName="complainantName" placeholder="Enter complainant name">
+              @if (caseForm.get('complainantName')?.hasError('required')) {
+                <mat-error>Complainant Name is required</mat-error>
+              }
+            </mat-form-field>
+          </section>
+
+          <!-- Defendant Section -->
+          <section class="form-section">
+            <h3 class="section-title">Defendant Details</h3>
+            <div class="grid-2">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Defendant Name</mat-label>
+                <input matInput formControlName="defendantName" placeholder="Enter defendant name">
+                @if (caseForm.get('defendantName')?.hasError('required')) {
+                  <mat-error>Defendant Name is required</mat-error>
+                }
+              </mat-form-field>
+              
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Aadhaar Number</mat-label>
+                <input matInput formControlName="aadhaarNumber" placeholder="12-digit Aadhaar">
+                @if (caseForm.get('aadhaarNumber')?.hasError('required')) {
+                  <mat-error>Aadhaar Number is required</mat-error>
+                }
+                @if (caseForm.get('aadhaarNumber')?.hasError('pattern')) {
+                  <mat-error>Aadhaar must be exactly 12 digits</mat-error>
+                }
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>PAN Number</mat-label>
+                <input matInput formControlName="panNumber" placeholder="10-character PAN">
+                @if (caseForm.get('panNumber')?.hasError('required')) {
+                  <mat-error>PAN Number is required</mat-error>
+                }
+                @if (caseForm.get('panNumber')?.hasError('pattern')) {
+                  <mat-error>PAN must be exactly 10 alphanumeric characters</mat-error>
+                }
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Bank Account Number</mat-label>
+                <input matInput formControlName="accountNumber" placeholder="Bank Account Number">
+                @if (caseForm.get('accountNumber')?.hasError('required')) {
+                  <mat-error>Account Number is required</mat-error>
+                }
+                @if (caseForm.get('accountNumber')?.hasError('pattern')) {
+                  <mat-error>Account Number must contain only digits</mat-error>
+                }
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="full-width col-span-2">
+                <mat-label>Bank Name</mat-label>
+                <input matInput formControlName="bankName" placeholder="e.g. Test Bank">
+                @if (caseForm.get('bankName')?.hasError('required')) {
+                  <mat-error>Bank Name is required</mat-error>
+                }
+                @if (caseForm.get('bankName')?.hasError('pattern')) {
+                  <mat-error>Currently only "Test Bank" is supported</mat-error>
+                }
+              </mat-form-field>
+            </div>
+          </section>
+
+          <!-- Order Section -->
+          <section class="form-section">
+            <h3 class="section-title">Order Details</h3>
+            <div class="grid-2">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Order Type</mat-label>
+                <mat-select formControlName="orderType">
+                  <mat-option [value]="OrderType.FreezeAccount">Freeze Account</mat-option>
+                  <mat-option [value]="OrderType.BalanceEnquiry">Balance Enquiry</mat-option>
+                </mat-select>
+                @if (caseForm.get('orderType')?.hasError('required')) {
+                  <mat-error>Order Type is required</mat-error>
+                }
+              </mat-form-field>
+
+              @if (caseForm.get('orderType')?.value == OrderType.FreezeAccount) {
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Freeze Amount (₹)</mat-label>
+                  <input matInput type="number" formControlName="freezeAmount" placeholder="Enter amount to freeze">
+                  @if (caseForm.get('freezeAmount')?.hasError('required')) {
+                    <mat-error>Freeze Amount is required</mat-error>
+                  }
+                </mat-form-field>
+              }
+            </div>
+          </section>
+
+          <!-- Documents Section -->
+          <section class="form-section">
+            <h3 class="section-title">Mandatory Documents</h3>
+            <p class="subtitle-text">Accepted formats: PDF, JPG, PNG (Max 5MB per file)</p>
+            
+            <div class="document-grid">
+              <div class="file-upload-group" [class.is-invalid]="!courtOrderFile && caseForm.touched">
+                <label>Court Order <span class="required">*</span></label>
+                <input type="file" accept=".pdf,.jpg,.jpeg,.png" (change)="onFileChange($event, 'courtOrder')" class="file-input">
+                @if (!courtOrderFile && caseForm.touched) {
+                  <span class="error-text">Court Order is required</span>
+                }
+                @if (fileErrors['courtOrder']) {
+                  <span class="error-text">{{ fileErrors['courtOrder'] }}</span>
+                }
+              </div>
+
+              <div class="file-upload-group" [class.is-invalid]="!aadhaarCopyFile && caseForm.touched">
+                <label>Aadhaar Copy <span class="required">*</span></label>
+                <input type="file" accept=".pdf,.jpg,.jpeg,.png" (change)="onFileChange($event, 'aadhaar')" class="file-input">
+                @if (!aadhaarCopyFile && caseForm.touched) {
+                  <span class="error-text">Aadhaar Copy is required</span>
+                }
+                @if (fileErrors['aadhaar']) {
+                  <span class="error-text">{{ fileErrors['aadhaar'] }}</span>
+                }
+              </div>
+
+              <div class="file-upload-group" [class.is-invalid]="!panCopyFile && caseForm.touched">
+                <label>PAN Copy <span class="required">*</span></label>
+                <input type="file" accept=".pdf,.jpg,.jpeg,.png" (change)="onFileChange($event, 'pan')" class="file-input">
+                @if (!panCopyFile && caseForm.touched) {
+                  <span class="error-text">PAN Copy is required</span>
+                }
+                @if (fileErrors['pan']) {
+                  <span class="error-text">{{ fileErrors['pan'] }}</span>
+                }
+              </div>
+            </div>
+          </section>
+
+          <div class="form-actions">
+            <button mat-flat-button color="primary" type="submit" class="submit-btn" [disabled]="isSubmitting || caseForm.invalid">
+              @if (isSubmitting) {
+                <mat-icon class="spinner-small">sync</mat-icon> Creating...
+              } @else {
+                <mat-icon>save</mat-icon> Create Case
+              }
+            </button>
+          </div>
+
+        </form>
+      </mat-card-content>
+    </mat-card>
+
+</div>

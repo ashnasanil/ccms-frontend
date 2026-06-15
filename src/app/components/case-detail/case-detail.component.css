@@ -1,0 +1,76 @@
+.detail-container {
+  padding: 24px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.back-link {
+  margin-right: 16px;
+}
+
+.header-content h1 {
+  margin: 0;
+  display: inline-block;
+  margin-right: 16px;
+}
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.detail-card {
+  margin-bottom: 16px;
+}
+
+.form-card {
+  grid-column: 1 / -1;
+  margin-top: 16px;
+}
+
+.data-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 12px;
+}
+
+.data-label {
+  font-size: 0.85em;
+  color: #666;
+  text-transform: uppercase;
+}
+
+.data-value {
+  font-size: 1.1em;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 16px;
+}
+
+.empty-text {
+  color: #999;
+  font-style: italic;
+}
+
+.spinner-small {
+  animation: spin 1s linear infinite;
+  margin-right: 8px;
+}
+
+@keyframes spin {
+  100% { transform: rotate(360deg); }
+}

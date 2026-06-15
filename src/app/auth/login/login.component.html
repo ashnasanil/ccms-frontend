@@ -1,0 +1,55 @@
+<div class="login-wrapper">
+  <div class="glow-sphere glow-sphere-1"></div>
+  <div class="glow-sphere glow-sphere-2"></div>
+  
+  <div class="login-card glass-panel">
+    <div class="brand-header">
+      <div class="logo-placeholder">
+        <mat-icon class="logo-icon">account_balance</mat-icon>
+      </div>
+      <h2>Court Case Management System</h2>
+      <p class="subtitle">Secure authentication portal</p>
+    </div>
+
+    @if (errorMessage()) {
+      <div class="error-banner" role="alert">
+        <mat-icon class="error-icon">error_outline</mat-icon>
+        <span>{{ errorMessage() }}</span>
+      </div>
+    }
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+      <!-- Username -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Username</mat-label>
+        <mat-icon matPrefix>person</mat-icon>
+        <input matInput formControlName="username" placeholder="Enter username" autocomplete="username">
+        @if (loginForm.get('username')?.hasError('required')) {
+          <mat-error>Username is required</mat-error>
+        }
+      </mat-form-field>
+
+      <!-- Password -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Password</mat-label>
+        <mat-icon matPrefix>lock</mat-icon>
+        <input matInput [type]="showPassword() ? 'text' : 'password'" formControlName="password" placeholder="Enter password" autocomplete="current-password">
+        <button mat-icon-button matSuffix type="button" (click)="togglePasswordVisibility()" aria-label="Toggle password visibility">
+          <mat-icon>{{showPassword() ? 'visibility' : 'visibility_off'}}</mat-icon>
+        </button>
+        @if (loginForm.get('password')?.hasError('required')) {
+          <mat-error>Password is required</mat-error>
+        }
+      </mat-form-field>
+
+      <!-- Submit button -->
+      <button mat-flat-button color="primary" type="submit" class="submit-btn" [disabled]="isLoading() || loginForm.invalid">
+        @if (isLoading()) {
+          <mat-icon class="spinner">sync</mat-icon> Signing in...
+        } @else {
+          Sign In
+        }
+      </button>
+    </form>
+  </div>
+</div>

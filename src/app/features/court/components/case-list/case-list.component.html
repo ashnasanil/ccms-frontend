@@ -1,125 +1,101 @@
 <div class="list-container">
-  <header class="list-header">
+  <div class="list-header">
     <div class="header-content">
       <h1>All Court Cases</h1>
       <p>View and manage all registered cases.</p>
     </div>
     <div class="header-actions">
-      <a routerLink="/court/cases/new" class="btn-primary">Create New Case</a>
-    </div>
-  </header>
-
-  <div class="controls-toolbar">
-    <div class="search-box">
-      <span class="search-icon">🔍</span>
-      <input type="text" [formControl]="searchControl" placeholder="Search cases...">
-    </div>
-    <div class="page-size-selector">
-      <label for="pageSize">Rows per page:</label>
-      <select id="pageSize" (change)="changePageSize($event)">
-        <option value="5">5</option>
-        <option value="10" selected>10</option>
-        <option value="25">25</option>
-        <option value="50">50</option>
-      </select>
+      <a mat-flat-button color="primary" routerLink="/court/cases/new">
+        <mat-icon>add</mat-icon> Create New Case
+      </a>
     </div>
   </div>
 
-  <div class="table-card">
+  <mat-card class="glass-panel table-card">
+    <mat-card-header>
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>Search cases</mat-label>
+        <mat-icon matPrefix>search</mat-icon>
+        <input matInput [formControl]="searchControl" placeholder="e.g. defendant name, case number">
+      </mat-form-field>
+    </mat-card-header>
+
     @if (isLoading) {
       <div class="state-container loading-state">
-        <div class="spinner"></div>
+        <mat-spinner diameter="40"></mat-spinner>
         <p>Loading cases...</p>
       </div>
     } @else if (errorMessage) {
       <div class="state-container error-state">
-        <p class="error-text">⚠️ {{ errorMessage }}</p>
-        <button class="btn-secondary" (click)="loadCases()">Retry</button>
-      </div>
-    } @else if (filteredCases.length === 0) {
-      <div class="state-container empty-state">
-        <p>No cases found matching your criteria.</p>
+        <mat-icon color="warn">error_outline</mat-icon>
+        <p class="error-text">{{ errorMessage }}</p>
+        <button mat-flat-button color="primary" (click)="loadCases()">Retry</button>
       </div>
     } @else {
       <div class="table-responsive">
-        <table class="ccms-table">
-          <thead>
-            <tr>
-              <th (click)="sortBy('caseNumber')" class="sortable">
-                Case Number
-                @if (sortColumn === 'caseNumber') {
-                  <span class="sort-icon">{{ sortDirection === 'asc' ? '↑' : '↓' }}</span>
-                }
-              </th>
-              <th (click)="sortBy('defendantName')" class="sortable">
-                Defendant Name
-                @if (sortColumn === 'defendantName') {
-                  <span class="sort-icon">{{ sortDirection === 'asc' ? '↑' : '↓' }}</span>
-                }
-              </th>
-              <th (click)="sortBy('orderType')" class="sortable">
-                Order Type
-                @if (sortColumn === 'orderType') {
-                  <span class="sort-icon">{{ sortDirection === 'asc' ? '↑' : '↓' }}</span>
-                }
-              </th>
-              <th (click)="sortBy('status')" class="sortable">
-                Status
-                @if (sortColumn === 'status') {
-                  <span class="sort-icon">{{ sortDirection === 'asc' ? '↑' : '↓' }}</span>
-                }
-              </th>
-              <th (click)="sortBy('createdDate')" class="sortable">
-                Created Date
-                @if (sortColumn === 'createdDate') {
-                  <span class="sort-icon">{{ sortDirection === 'asc' ? '↑' : '↓' }}</span>
-                }
-              </th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (caseItem of paginatedCases; track caseItem.caseNumber) {
-              <tr>
-                <td class="font-mono">{{ caseItem.caseNumber }}</td>
-                <td class="font-bold">{{ caseItem.defendantName }}</td>
-                <td>
-                  <span class="type-badge" [class.freeze]="caseItem.orderType === 'FreezeAccount'">
-                    {{ caseItem.orderType }}
-                  </span>
-                </td>
-                <td>
-                  <span class="status-badge" [class.pending]="caseItem.status === 'Pending'">
-                    {{ caseItem.status }}
-                  </span>
-                </td>
-                <td>{{ caseItem.createdDate | date:'mediumDate' }}</td>
-                <td>
-                  <!-- Note: Assuming details view is /court/cases/:id -->
-                  <a [routerLink]="['/court/cases', caseItem.caseNumber]" class="btn-action">View</a>
-                </td>
-              </tr>
-            }
-          </tbody>
+        <table mat-table [dataSource]="dataSource" matSort class="ccms-table">
+
+          <!-- Case Number Column -->
+          <ng-container matColumnDef="caseNumber">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Case Number </th>
+            <td mat-cell *matCellDef="let row" class="font-mono"> {{row.caseNumber}} </td>
+          </ng-container>
+
+          <!-- Defendant Name Column -->
+          <ng-container matColumnDef="defendantName">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Defendant Name </th>
+            <td mat-cell *matCellDef="let row" class="font-bold"> {{row.defendantName}} </td>
+          </ng-container>
+
+          <!-- Order Type Column -->
+          <ng-container matColumnDef="orderType">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Order Type </th>
+            <td mat-cell *matCellDef="let row">
+              <span class="type-badge" [class.freeze]="row.orderType === 'FreezeAccount'">
+                {{row.orderType}}
+              </span>
+            </td>
+          </ng-container>
+
+          <!-- Status Column -->
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Status </th>
+            <td mat-cell *matCellDef="let row">
+              <span class="status-badge" [class.pending]="row.status === 'Pending'">
+                {{row.status}}
+              </span>
+            </td>
+          </ng-container>
+
+          <!-- Created Date Column -->
+          <ng-container matColumnDef="createdDate">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Date </th>
+            <td mat-cell *matCellDef="let row"> {{row.createdDate | date:'mediumDate'}} </td>
+          </ng-container>
+
+          <!-- Actions Column -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef> Actions </th>
+            <td mat-cell *matCellDef="let row">
+              <a mat-icon-button color="primary" [routerLink]="['/court/cases', row.caseNumber]">
+                <mat-icon>visibility</mat-icon>
+              </a>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+          <!-- Row shown when there is no matching data. -->
+          <tr class="mat-row" *matNoDataRow>
+            <td class="mat-cell" colspan="6">
+              <div class="empty-state">No cases found matching your search.</div>
+            </td>
+          </tr>
         </table>
       </div>
 
-      <!-- Pagination -->
-      <div class="pagination">
-        <div class="pagination-info">
-          Showing {{ (currentPage - 1) * pageSize + 1 }} to 
-          {{ Math.min(currentPage * pageSize, filteredCases.length) }} of {{ filteredCases.length }} entries
-        </div>
-        <div class="pagination-controls">
-          <button (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1" class="page-btn">Previous</button>
-          
-          <div class="page-numbers">
-            Page {{ currentPage }} of {{ totalPages }}
-          </div>
-
-          <button (click)="changePage(currentPage + 1)" [disabled]="currentPage === totalPages" class="page-btn">Next</button>
-        </div>
-      </div>
+      <mat-paginator [pageSizeOptions]="[5, 10, 25, 50]" aria-label="Select page of cases"></mat-paginator>
     }
-  </div>
+  </mat-card>
 </div>

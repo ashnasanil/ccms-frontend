@@ -1,48 +1,78 @@
-import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef, ViewChild, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormControl } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { RouterModule, ActivatedRoute } from '@angular/router';
 import { CourtService } from '../../services/court.service';
 import { CaseList } from '../../models/case-list.model';
+import { MatTableModule, MatTableDataSource } from '@angular/material/table';
+import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
+import { MatSortModule, MatSort } from '@angular/material/sort';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatCardModule } from '@angular/material/card';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-case-list',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule],
+  imports: [
+    CommonModule, 
+    ReactiveFormsModule, 
+    RouterModule, 
+    MatTableModule, 
+    MatPaginatorModule, 
+    MatSortModule, 
+    MatFormFieldModule, 
+    MatInputModule, 
+    MatButtonModule, 
+    MatIconModule,
+    MatCardModule,
+    MatProgressSpinnerModule
+  ],
   templateUrl: './case-list.component.html',
   styleUrl: './case-list.component.css'
 })
-export class CaseListComponent implements OnInit {
+export class CaseListComponent implements OnInit, AfterViewInit {
   private courtService = inject(CourtService);
   private cdr = inject(ChangeDetectorRef);
+  private route = inject(ActivatedRoute);
 
-  // Data
-  allCases: CaseList[] = [];
-  filteredCases: CaseList[] = [];
-  
+  searchControl = new FormControl('');
+
   // State
   isLoading = true;
   errorMessage = '';
 
-  // Search
-  searchControl = new FormControl('');
+  // Table Setup
+  displayedColumns: string[] = ['caseNumber', 'defendantName', 'orderType', 'status', 'createdDate', 'actions'];
+  dataSource = new MatTableDataSource<CaseList>([]);
 
-  // Sort
-  sortColumn: keyof CaseList | '' = '';
-  sortDirection: 'asc' | 'desc' = 'asc';
-
-  // Pagination
-  currentPage = 1;
-  pageSize = 10;
-  Math = Math; // Expose Math for template
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
 
   ngOnInit(): void {
     this.loadCases();
-    
-    this.searchControl.valueChanges.subscribe(term => {
-      this.applyFilterAndSort(term || '');
-      this.cdr.markForCheck();
+
+    this.searchControl.valueChanges.subscribe(value => {
+      this.dataSource.filter = (value || '').trim().toLowerCase();
+      if (this.dataSource.paginator) {
+        this.dataSource.paginator.firstPage();
+      }
     });
+
+    this.route.queryParams.subscribe(params => {
+      const status = params['status'];
+      if (status) {
+        this.searchControl.setValue(status);
+      }
+    });
+  }
+
+  ngAfterViewInit() {
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
   }
 
   loadCases(): void {
@@ -51,8 +81,7 @@ export class CaseListComponent implements OnInit {
 
     this.courtService.getCases().subscribe({
       next: (data) => {
-        this.allCases = data;
-        this.applyFilterAndSort(this.searchControl.value || '');
+        this.dataSource.data = data;
         this.isLoading = false;
         this.cdr.markForCheck();
       },
@@ -65,65 +94,4 @@ export class CaseListComponent implements OnInit {
     });
   }
 
-  sortBy(column: keyof CaseList): void {
-    if (this.sortColumn === column) {
-      this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
-    } else {
-      this.sortColumn = column;
-      this.sortDirection = 'asc';
-    }
-    this.applyFilterAndSort(this.searchControl.value || '');
-  }
-
-  applyFilterAndSort(searchTerm: string): void {
-    let result = [...this.allCases];
-
-    // 1. Search Filter
-    if (searchTerm.trim()) {
-      const term = searchTerm.toLowerCase().trim();
-      result = result.filter(c => 
-        c.caseNumber.toLowerCase().includes(term) ||
-        c.defendantName.toLowerCase().includes(term) ||
-        c.orderType.toLowerCase().includes(term) ||
-        c.status.toLowerCase().includes(term)
-      );
-    }
-
-    // 2. Sort
-    if (this.sortColumn) {
-      result.sort((a, b) => {
-        const valA = String(a[this.sortColumn as keyof CaseList]).toLowerCase();
-        const valB = String(b[this.sortColumn as keyof CaseList]).toLowerCase();
-        
-        if (valA < valB) return this.sortDirection === 'asc' ? -1 : 1;
-        if (valA > valB) return this.sortDirection === 'asc' ? 1 : -1;
-        return 0;
-      });
-    }
-
-    this.filteredCases = result;
-    this.currentPage = 1; // Reset to first page on new search/sort
-  }
-
-  // Pagination getters
-  get totalPages(): number {
-    return Math.ceil(this.filteredCases.length / this.pageSize);
-  }
-
-  get paginatedCases(): CaseList[] {
-    const startIndex = (this.currentPage - 1) * this.pageSize;
-    return this.filteredCases.slice(startIndex, startIndex + this.pageSize);
-  }
-
-  changePage(page: number): void {
-    if (page >= 1 && page <= this.totalPages) {
-      this.currentPage = page;
-    }
-  }
-
-  changePageSize(event: Event): void {
-    const select = event.target as HTMLSelectElement;
-    this.pageSize = Number(select.value);
-    this.currentPage = 1;
-  }
 }

@@ -4,11 +4,17 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { Router } from '@angular/router';
 import { CourtService } from '../../services/court.service';
 import { OrderType, CreateCaseResponse } from '../../models/create-case.model';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatCardModule } from '@angular/material/card';
 
 @Component({
   selector: 'app-create-case',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatIconModule, MatCardModule],
   templateUrl: './create-case.component.html',
   styleUrl: './create-case.component.css'
 })
@@ -41,10 +47,10 @@ export class CreateCaseComponent implements OnInit {
     this.caseForm = this.fb.group({
       complainantName: ['', Validators.required],
       defendantName: ['', Validators.required],
-      aadhaarNumber: ['', Validators.required],
-      panNumber: ['', Validators.required],
-      accountNumber: ['', Validators.required],
-      bankName: ['', Validators.required],
+      aadhaarNumber: ['', [Validators.required, Validators.pattern('^[0-9]{12}$')]],
+      panNumber: ['', [Validators.required, Validators.pattern('^[A-Za-z0-9]{10}$')]],
+      accountNumber: ['', [Validators.required, Validators.pattern('^[0-9]+$')]],
+      bankName: ['', [Validators.required, Validators.pattern('^Test Bank$')]],
       orderType: [OrderType.FreezeAccount, Validators.required],
       freezeAmount: ['', Validators.required],
     });
@@ -67,10 +73,25 @@ export class CreateCaseComponent implements OnInit {
     });
   }
 
+  fileErrors: { [key: string]: string } = {};
+
   onFileChange(event: Event, fileType: 'courtOrder' | 'aadhaar' | 'pan'): void {
     const input = event.target as HTMLInputElement;
+    this.fileErrors[fileType] = '';
+
     if (input.files && input.files.length > 0) {
       const file = input.files[0];
+      const maxFileSize = 5 * 1024 * 1024; // 5 MB
+      
+      if (file.size > maxFileSize) {
+        this.fileErrors[fileType] = `File exceeds the maximum allowed size of 5 MB.`;
+        input.value = ''; // Clear the input
+        if (fileType === 'courtOrder') this.courtOrderFile = null;
+        if (fileType === 'aadhaar') this.aadhaarCopyFile = null;
+        if (fileType === 'pan') this.panCopyFile = null;
+        return;
+      }
+
       if (fileType === 'courtOrder') this.courtOrderFile = file;
       if (fileType === 'aadhaar') this.aadhaarCopyFile = file;
       if (fileType === 'pan') this.panCopyFile = file;

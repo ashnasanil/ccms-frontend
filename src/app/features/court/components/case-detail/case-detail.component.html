@@ -1,28 +1,31 @@
 <div class="detail-container">
-  <header class="detail-header">
+  <div class="detail-header">
     <div class="header-content">
-      <a routerLink="/court/cases" class="back-link">← Back to Cases</a>
+      <a mat-button color="primary" routerLink="/court/cases" class="back-link">
+        <mat-icon>arrow_back</mat-icon> Back to Cases
+      </a>
       <h1>Case Details</h1>
       @if (caseDetail) {
         <p>Viewing comprehensive information for <strong>{{ caseDetail.caseNumber }}</strong></p>
       }
     </div>
-  </header>
+  </div>
 
   @if (isLoading) {
     <div class="state-container">
-      <div class="spinner"></div>
+      <mat-spinner diameter="40"></mat-spinner>
       <p>Loading case data...</p>
     </div>
   } @else if (errorMessage) {
     <div class="state-container error-state">
-      <p class="error-text">⚠️ {{ errorMessage }}</p>
-      <a routerLink="/court/cases" class="btn-primary">Return to List</a>
+      <mat-icon color="warn">error_outline</mat-icon>
+      <p class="error-text">{{ errorMessage }}</p>
+      <a mat-flat-button color="primary" routerLink="/court/cases">Return to List</a>
     </div>
   } @else if (caseDetail) {
     
     <!-- Top Status Banner -->
-    <div class="status-banner">
+    <mat-card class="status-banner glass-panel">
       <div class="status-item">
         <span class="label">Status</span>
         <span class="badge status-badge" [class.pending]="caseDetail.status === 'Pending'">{{ caseDetail.status }}</span>
@@ -35,15 +38,18 @@
         <span class="label">Order Type</span>
         <span class="badge type-badge" [class.freeze]="caseDetail.orderType === 'FreezeAccount'">{{ caseDetail.orderType }}</span>
       </div>
-    </div>
+    </mat-card>
 
     <!-- Main Content Grid -->
     <div class="details-grid">
       
       <!-- Parties Section -->
-      <section class="detail-card">
-        <h3><span class="icon">👥</span> Involved Parties</h3>
-        <div class="card-content">
+      <mat-card class="detail-card glass-panel">
+        <mat-card-header>
+          <div mat-card-avatar><mat-icon color="primary">group</mat-icon></div>
+          <mat-card-title>Involved Parties</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
           <div class="data-group">
             <span class="data-label">Complainant Name</span>
             <span class="data-value">{{ caseDetail.complainantName }}</span>
@@ -53,13 +59,16 @@
             <span class="data-label">Defendant Name</span>
             <span class="data-value font-bold">{{ caseDetail.defendantName }}</span>
           </div>
-        </div>
-      </section>
+        </mat-card-content>
+      </mat-card>
 
-      <!-- Identity & Banking (Masked by Backend) -->
-      <section class="detail-card">
-        <h3><span class="icon">🔒</span> Identity & Banking</h3>
-        <div class="card-content">
+      <!-- Identity & Banking -->
+      <mat-card class="detail-card glass-panel">
+        <mat-card-header>
+          <div mat-card-avatar><mat-icon color="primary">lock</mat-icon></div>
+          <mat-card-title>Identity & Banking</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
           <div class="data-group">
             <span class="data-label">Aadhaar Number</span>
             <span class="data-value font-mono">{{ caseDetail.aadhaarNumber }}</span>
@@ -76,13 +85,16 @@
             <span class="data-label">Bank Name</span>
             <span class="data-value">{{ caseDetail.bankName }}</span>
           </div>
-        </div>
-      </section>
+        </mat-card-content>
+      </mat-card>
 
       <!-- Order Specifics -->
-      <section class="detail-card">
-        <h3><span class="icon">⚖️</span> Order Specifics</h3>
-        <div class="card-content">
+      <mat-card class="detail-card glass-panel">
+        <mat-card-header>
+          <div mat-card-avatar><mat-icon color="primary">gavel</mat-icon></div>
+          <mat-card-title>Order Specifics</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
           <div class="data-group">
             <span class="data-label">Requested Action</span>
             <span class="data-value">{{ caseDetail.orderType }}</span>
@@ -93,38 +105,74 @@
               <span class="data-value highlight">₹{{ caseDetail.freezeAmount | number:'1.2-2' }}</span>
             </div>
           }
-        </div>
-      </section>
+        </mat-card-content>
+      </mat-card>
 
       <!-- Documents -->
-      <section class="detail-card">
-        <h3><span class="icon">📄</span> Uploaded Documents</h3>
-        <div class="card-content">
-          @if (caseDetail.documents && caseDetail.documents.length > 0) {
-            <ul class="document-list">
-              @for (doc of caseDetail.documents; track doc) {
-                <li class="document-item">
-                  <span class="doc-icon">📎</span>
-                  <span class="doc-name">{{ doc }}</span>
-                </li>
+      <mat-card class="detail-card glass-panel">
+        <mat-card-header>
+          <div mat-card-avatar><mat-icon color="primary">description</mat-icon></div>
+          <mat-card-title>Uploaded Documents</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          @if (caseDetail.attachments && caseDetail.attachments.length > 0) {
+            <mat-list>
+              @for (doc of caseDetail.attachments; track doc.fileName) {
+                <mat-list-item>
+                  <mat-icon matListItemIcon color="primary">description</mat-icon>
+                  <div matListItemTitle>{{ doc.fileName }}</div>
+                  <a mat-icon-button [href]="getAttachmentUrl(doc.filePath)" target="_blank" download>
+                    <mat-icon>download</mat-icon>
+                  </a>
+                </mat-list-item>
               }
-            </ul>
+            </mat-list>
           } @else {
             <p class="empty-text">No documents attached to this case.</p>
           }
-        </div>
-      </section>
+        </mat-card-content>
+      </mat-card>
 
     </div>
 
-    <!-- Bank Response Section (If exists) -->
+    <!-- Bank Response Section -->
     @if (caseDetail.bankResponse) {
-      <section class="detail-card full-width mt-4">
-        <h3><span class="icon">🏦</span> Official Bank Response</h3>
-        <div class="card-content">
-          <pre class="json-viewer">{{ caseDetail.bankResponse | json }}</pre>
-        </div>
-      </section>
+      <mat-card class="detail-card full-width mt-4 glass-panel">
+        <mat-card-header>
+          <div mat-card-avatar><mat-icon color="primary">account_balance</mat-icon></div>
+          <mat-card-title>Official Bank Response</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="data-group">
+            <span class="data-label">Matched Account Number</span>
+            <span class="data-value">{{ caseDetail.bankResponse.accountNumber || 'N/A' }}</span>
+          </div>
+          @if (caseDetail.bankResponse.balance != null) {
+            <div class="data-group">
+              <span class="data-label">Account Balance</span>
+              <span class="data-value highlight">₹{{ caseDetail.bankResponse.balance | number:'1.2-2' }}</span>
+            </div>
+          }
+          @if (caseDetail.bankResponse.freezeAmount != null) {
+            <div class="data-group">
+              <span class="data-label">Applied Freeze Amount</span>
+              <span class="data-value highlight">₹{{ caseDetail.bankResponse.freezeAmount | number:'1.2-2' }}</span>
+            </div>
+          }
+          <div class="data-group">
+            <span class="data-label">Account Status</span>
+            <span class="data-value">{{ caseDetail.bankResponse.accountStatus || 'N/A' }}</span>
+          </div>
+          <div class="data-group mt-2">
+            <span class="data-label">Remarks</span>
+            <span class="data-value">{{ caseDetail.bankResponse.remarks || 'No remarks provided.' }}</span>
+          </div>
+          <div class="data-group mt-2">
+            <span class="data-label">Responded At</span>
+            <span class="data-value">{{ caseDetail.bankResponse.respondedAt | date:'medium' }}</span>
+          </div>
+        </mat-card-content>
+      </mat-card>
     }
 
   }

@@ -2,11 +2,15 @@ import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../auth.service';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })
@@ -43,9 +47,9 @@ export class LoginComponent {
       next: () => {
         this.isLoading.set(false);
         const role = this.authService.getRole();
-        if (role === 'Court') {
+        if (role === 'CourtOfficer') {
           this.router.navigate(['/court-dashboard']);
-        } else if (role === 'Bank') {
+        } else if (role === 'BankOfficer') {
           this.router.navigate(['/bank-dashboard']);
         } else {
           this.errorMessage.set('Authorized, but role is unrecognized.');

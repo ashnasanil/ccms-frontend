@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterModule } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -12,12 +12,14 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angula
 import { ApiService } from '../../services/api.service';
 import { CaseDetailDto, CaseResponseDto } from '../../models/dtos';
 import { CaseStatus, OrderType, ResponseType } from '../../models/enums';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-case-detail',
   standalone: true,
   imports: [
     CommonModule, 
+    RouterModule,
     MatCardModule, 
     MatButtonModule, 
     MatIconModule, 
@@ -61,11 +63,27 @@ export class CaseDetailComponent implements OnInit {
   loadCase(id: string): void {
     this.apiService.getCaseDetail(id).subscribe(data => {
       this.caseDetail = data;
+      
+      // Auto pre-fill the balance amount for Balance Enquiry cases
+      if (this.caseDetail.status === CaseStatus.AccountValidated && 
+          this.caseDetail.orderType === OrderType.BalanceEnquiry && 
+          this.caseDetail.matchedBalance !== null) {
+        this.responseForm.patchValue({
+          amount: this.caseDetail.matchedBalance
+        });
+      }
     });
   }
 
   get showResponseForm(): boolean {
     return this.caseDetail?.status === CaseStatus.AccountValidated && !this.caseDetail?.existingResponse;
+  }
+
+  getAttachmentUrl(path: string): string {
+    if (!path) return '';
+    if (path.startsWith('http') || path.startsWith('file://')) return path;
+    const baseUrl = environment.apiUrl.replace(/\/api\/?$/, '');
+    return `${baseUrl}${path.startsWith('/') ? path : '/' + path}`;
   }
 
   submitResponse(): void {
@@ -75,7 +93,7 @@ export class CaseDetailComponent implements OnInit {
     const amount = this.responseForm.value.amount;
     const remarks = this.responseForm.value.remarks;
 
-    if (this.caseDetail.orderType === OrderType.FreezeAccount) {
+    if (this.caseDetail.orderType === OrderType.Freeze) {
       this.apiService.submitFreezeResponse(this.caseDetail.id, {
         caseId: this.caseDetail.id,
         freezeAmount: amount,

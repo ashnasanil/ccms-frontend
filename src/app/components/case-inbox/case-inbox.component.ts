@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatIconModule } from '@angular/material/icon';
 import { Router } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 import { CaseListDto } from '../../models/dtos';
@@ -11,7 +13,7 @@ import { OrderType } from '../../models/enums';
 @Component({
   selector: 'app-case-inbox',
   standalone: true,
-  imports: [CommonModule, MatTabsModule, MatTableModule, MatButtonModule],
+  imports: [CommonModule, MatTabsModule, MatTableModule, MatButtonModule, MatCardModule, MatIconModule],
   templateUrl: './case-inbox.component.html',
   styleUrl: './case-inbox.component.css'
 })

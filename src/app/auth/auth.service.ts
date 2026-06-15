@@ -18,7 +18,7 @@ export class AuthService {
   private readonly router = inject(Router);
 
   login(username: string, password: string): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>(`${environment.apiUrl}/auth/login`, { username, password }).pipe(
+    return this.http.post<LoginResponse>(`${environment.apiUrl}/auth/login`, { email: username, password }).pipe(
       tap(response => {
         if (response && response.token) {
           localStorage.setItem('token', response.token);

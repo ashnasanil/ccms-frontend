@@ -16,6 +16,10 @@ $ccms-frontend-theme: mat.define-theme((
     primary: mat.$azure-palette,
     tertiary: mat.$blue-palette,
   ),
+  typography: (
+    plain-family: 'Inter, sans-serif',
+    brand-family: 'Inter, sans-serif',
+  ),
   density: (
     scale: 0,
   )

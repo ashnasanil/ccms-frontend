@@ -3,11 +3,18 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { CourtService } from '../../services/court.service';
 import { CaseDetail } from '../../models/case-detail.model';
+import { MatCardModule } from '@angular/material/card';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatListModule } from '@angular/material/list';
+import { MatChipsModule } from '@angular/material/chips';
+import { environment } from '../../../../../environments/environment';
 
 @Component({
   selector: 'app-case-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, MatCardModule, MatButtonModule, MatIconModule, MatProgressSpinnerModule, MatListModule, MatChipsModule],
   templateUrl: './case-detail.component.html',
   styleUrl: './case-detail.component.css'
 })
@@ -45,5 +52,9 @@ export class CaseDetailComponent implements OnInit {
         this.cdr.markForCheck();
       }
     });
+  }
+
+  getAttachmentUrl(filePath: string): string {
+    return environment.apiUrl.replace(/\/api$/, '') + filePath;
   }
 }

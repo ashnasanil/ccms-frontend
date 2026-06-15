@@ -10,6 +10,6 @@ export interface CaseDetail {
   freezeAmount?: number;
   status: string;
   createdDate: string;
-  documents: string[];
+  attachments: { fileName: string; filePath: string; uploadedDate: string }[];
   bankResponse?: any;
 }

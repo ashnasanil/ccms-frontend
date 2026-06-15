@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../../../environments/environment';
 import { CourtDashboard } from '../models/court-dashboard.model';
 import { CreateCaseResponse } from '../models/create-case.model';
 import { CaseList } from '../models/case-list.model';
@@ -12,8 +13,7 @@ import { CaseDetail } from '../models/case-detail.model';
 export class CourtService {
   private http = inject(HttpClient);
   
-  // Assuming a relative path mapping to the backend via proxy or identical domain
-  private apiUrl = '/api/court';
+  private apiUrl = `${environment.apiUrl}/api/court`;
 
   getDashboard(): Observable<CourtDashboard> {
     return this.http.get<CourtDashboard>(`${this.apiUrl}/dashboard`);

@@ -7,7 +7,7 @@
   <!-- Loading State -->
   @if (isLoading) {
     <div class="state-container loading-state">
-      <div class="spinner"></div>
+      <mat-spinner diameter="40"></mat-spinner>
       <p>Loading your dashboard...</p>
     </div>
   }
@@ -15,9 +15,9 @@
   <!-- Error State -->
   @if (!isLoading && errorMessage) {
     <div class="state-container error-state">
-      <div class="error-icon">⚠️</div>
+      <mat-icon class="error-icon" color="warn">error_outline</mat-icon>
       <p>{{ errorMessage }}</p>
-      <button class="retry-btn" (click)="loadDashboard()">Retry</button>
+      <button mat-flat-button color="primary" (click)="loadDashboard()">Retry</button>
     </div>
   }
 
@@ -25,58 +25,70 @@
   @if (!isLoading && !errorMessage && dashboardData) {
     <div class="stats-grid">
       <!-- Total Cases -->
-      <div class="stat-card primary-gradient">
-        <div class="stat-icon">📁</div>
-        <div class="stat-content">
-          <h3>Total Cases</h3>
-          <p class="stat-value">{{ dashboardData.totalCases }}</p>
-        </div>
-      </div>
+      <mat-card class="glass-panel stat-card" (click)="navigateToCases()" style="cursor: pointer;">
+        <mat-card-header>
+          <mat-icon mat-card-avatar color="primary">folder</mat-icon>
+          <mat-card-title>Total Cases</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <p class="stat-value text-primary">{{ dashboardData.totalCases }}</p>
+        </mat-card-content>
+      </mat-card>
 
       <!-- Pending Cases -->
-      <div class="stat-card warning-gradient">
-        <div class="stat-icon">⏳</div>
-        <div class="stat-content">
-          <h3>Pending Cases</h3>
-          <p class="stat-value">{{ dashboardData.pendingCases }}</p>
-        </div>
-      </div>
+      <mat-card class="glass-panel stat-card" (click)="navigateToCases('Pending')" style="cursor: pointer;">
+        <mat-card-header>
+          <mat-icon mat-card-avatar class="text-warning">hourglass_empty</mat-icon>
+          <mat-card-title>Pending</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <p class="stat-value text-warning">{{ dashboardData.pendingCases }}</p>
+        </mat-card-content>
+      </mat-card>
 
       <!-- Account Validated -->
-      <div class="stat-card success-gradient">
-        <div class="stat-icon">✅</div>
-        <div class="stat-content">
-          <h3>Account Validated</h3>
-          <p class="stat-value">{{ dashboardData.accountValidatedCases }}</p>
-        </div>
-      </div>
+      <mat-card class="glass-panel stat-card" (click)="navigateToCases('AccountValidated')" style="cursor: pointer;">
+        <mat-card-header>
+          <mat-icon mat-card-avatar class="text-success">check_circle</mat-icon>
+          <mat-card-title>Validated</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <p class="stat-value text-success">{{ dashboardData.accountValidatedCases }}</p>
+        </mat-card-content>
+      </mat-card>
 
       <!-- Account Not Found -->
-      <div class="stat-card danger-gradient">
-        <div class="stat-icon">❌</div>
-        <div class="stat-content">
-          <h3>Account Not Found</h3>
-          <p class="stat-value">{{ dashboardData.accountNotFoundCases }}</p>
-        </div>
-      </div>
+      <mat-card class="glass-panel stat-card" (click)="navigateToCases('AccountNotFound')" style="cursor: pointer;">
+        <mat-card-header>
+          <mat-icon mat-card-avatar color="warn">cancel</mat-icon>
+          <mat-card-title>Not Found</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <p class="stat-value text-warn">{{ dashboardData.accountNotFoundCases }}</p>
+        </mat-card-content>
+      </mat-card>
 
       <!-- Freeze Applied -->
-      <div class="stat-card info-gradient">
-        <div class="stat-icon">❄️</div>
-        <div class="stat-content">
-          <h3>Freeze Applied</h3>
-          <p class="stat-value">{{ dashboardData.freezeAppliedCases }}</p>
-        </div>
-      </div>
+      <mat-card class="glass-panel stat-card" (click)="navigateToCases('FreezeApplied')" style="cursor: pointer;">
+        <mat-card-header>
+          <mat-icon mat-card-avatar class="text-info">ac_unit</mat-icon>
+          <mat-card-title>Freeze Applied</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <p class="stat-value text-info">{{ dashboardData.freezeAppliedCases }}</p>
+        </mat-card-content>
+      </mat-card>
 
       <!-- Balance Provided -->
-      <div class="stat-card neutral-gradient">
-        <div class="stat-icon">💰</div>
-        <div class="stat-content">
-          <h3>Balance Provided</h3>
-          <p class="stat-value">{{ dashboardData.balanceProvidedCases }}</p>
-        </div>
-      </div>
+      <mat-card class="glass-panel stat-card" (click)="navigateToCases('BalanceProvided')" style="cursor: pointer;">
+        <mat-card-header>
+          <mat-icon mat-card-avatar class="text-neutral">account_balance_wallet</mat-icon>
+          <mat-card-title>Balance Provided</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <p class="stat-value text-neutral">{{ dashboardData.balanceProvidedCases }}</p>
+        </mat-card-content>
+      </mat-card>
     </div>
   }
 </div>

@@ -1,17 +1,14 @@
 export enum CaseStatus {
-  Pending = 0,
-  AccountValidated = 1,
-  AccountNotFound = 2,
-  FreezeApplied = 3,
-  BalanceProvided = 4,
-  AmountRemitted = 5,
-  CaseClosed = 6
+  Pending = 1,
+  AccountValidated = 2,
+  AccountNotFound = 3,
+  FreezeApplied = 4,
+  BalanceProvided = 5
 }
 
 export enum OrderType {
-  FreezeAccount = 0,
-  LienAmount = 1,
-  RemitAmount = 2
+  Freeze = 0,
+  BalanceEnquiry = 1
 }
 
 export enum ResponseType {

@@ -1,65 +1,99 @@
 <div class="dashboard-container">
-  <h1>Bank Dashboard</h1>
-
-  <div class="summary-cards" *ngIf="summary">
-    <mat-card class="summary-card awaiting">
-      <mat-card-header>
-        <mat-card-title>Awaiting Action</mat-card-title>
-        <mat-icon mat-card-avatar>pending_actions</mat-icon>
-      </mat-card-header>
-      <mat-card-content>
-        <div class="count">{{ summary.awaitingAction }}</div>
-      </mat-card-content>
-    </mat-card>
-
-    <mat-card class="summary-card pending-batch">
-      <mat-card-header>
-        <mat-card-title>Pending Batch</mat-card-title>
-        <mat-icon mat-card-avatar>hourglass_empty</mat-icon>
-      </mat-card-header>
-      <mat-card-content>
-        <div class="count">{{ summary.pendingBatch }}</div>
-      </mat-card-content>
-    </mat-card>
-
-    <mat-card class="summary-card completed">
-      <mat-card-header>
-        <mat-card-title>Completed</mat-card-title>
-        <mat-icon mat-card-avatar>check_circle</mat-icon>
-      </mat-card-header>
-      <mat-card-content>
-        <div class="count">{{ summary.completed }}</div>
-      </mat-card-content>
-    </mat-card>
-
-    <mat-card class="summary-card auto-resolved">
-      <mat-card-header>
-        <mat-card-title>Auto Resolved</mat-card-title>
-        <mat-icon mat-card-avatar>autorenew</mat-icon>
-      </mat-card-header>
-      <mat-card-content>
-        <div class="count">{{ summary.autoResolved }}</div>
-      </mat-card-content>
-    </mat-card>
+  <div class="dashboard-header">
+    <h1>Bank Dashboard</h1>
+    <p>Overview of bank actions and batch processing.</p>
   </div>
 
+  @if (summary) {
+    <div class="stats-grid">
+      <!-- Awaiting Action -->
+      <mat-card class="glass-panel stat-card awaiting">
+        <mat-card-header>
+          <mat-icon mat-card-avatar color="warn">pending_actions</mat-icon>
+          <mat-card-title>Awaiting Action</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <p class="stat-value text-warn">{{ summary.awaitingAction }}</p>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Pending Batch -->
+      <mat-card class="glass-panel stat-card pending-batch">
+        <mat-card-header>
+          <mat-icon mat-card-avatar color="primary">hourglass_empty</mat-icon>
+          <mat-card-title>Pending Batch</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <p class="stat-value text-primary">{{ summary.pendingBatch }}</p>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Completed -->
+      <mat-card class="glass-panel stat-card completed">
+        <mat-card-header>
+          <mat-icon mat-card-avatar class="text-success">check_circle</mat-icon>
+          <mat-card-title>Completed</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <p class="stat-value text-success">{{ summary.completed }}</p>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Auto Resolved -->
+      <mat-card class="glass-panel stat-card auto-resolved">
+        <mat-card-header>
+          <mat-icon mat-card-avatar class="text-info">autorenew</mat-icon>
+          <mat-card-title>Auto Resolved</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <p class="stat-value text-info">{{ summary.autoResolved }}</p>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  }
+
   <div class="batch-section">
-    <mat-card class="batch-card">
+    <mat-card class="glass-panel batch-card">
       <mat-card-header>
+        <div mat-card-avatar><mat-icon color="primary">settings</mat-icon></div>
         <mat-card-title>Batch Processing</mat-card-title>
-        <mat-card-subtitle *ngIf="lastBatchLog">Last run: {{ lastBatchLog.runTime | date:'medium' }}</mat-card-subtitle>
-        <mat-card-subtitle *ngIf="!lastBatchLog">No batch run records found.</mat-card-subtitle>
+        <mat-card-subtitle>
+          @if (lastBatchLog) {
+            Last run: {{ lastBatchLog.runTime | date:'medium' }}
+          } @else {
+            No batch run records found.
+          }
+        </mat-card-subtitle>
       </mat-card-header>
-      <mat-card-content *ngIf="lastBatchLog">
-        <p><strong>Status:</strong> {{ lastBatchLog.status }}</p>
-        <p><strong>Processed:</strong> {{ lastBatchLog.processedCount }}</p>
-        <p><strong>Validated:</strong> {{ lastBatchLog.validatedCount }}</p>
-        <p><strong>Not Found:</strong> {{ lastBatchLog.notFoundCount }}</p>
-      </mat-card-content>
-      <mat-card-actions>
-        <button mat-raised-button color="primary" (click)="triggerBatch()" [disabled]="loadingBatch">
-          <mat-icon>play_arrow</mat-icon>
-          {{ loadingBatch ? 'Triggering...' : 'Trigger Manual Batch' }}
+      
+      @if (lastBatchLog) {
+        <mat-card-content>
+          <div class="data-group">
+            <span class="data-label">Status</span>
+            <span class="data-value font-bold">{{ lastBatchLog.status }}</span>
+          </div>
+          <div class="data-group">
+            <span class="data-label">Processed</span>
+            <span class="data-value">{{ lastBatchLog.processedCount }}</span>
+          </div>
+          <div class="data-group">
+            <span class="data-label">Validated</span>
+            <span class="data-value text-success">{{ lastBatchLog.validatedCount }}</span>
+          </div>
+          <div class="data-group">
+            <span class="data-label">Not Found</span>
+            <span class="data-value text-warn">{{ lastBatchLog.notFoundCount }}</span>
+          </div>
+        </mat-card-content>
+      }
+
+      <mat-card-actions align="end">
+        <button mat-flat-button color="primary" class="trigger-btn" (click)="triggerBatch()" [disabled]="loadingBatch">
+          @if (loadingBatch) {
+            <mat-icon class="spinner-small">sync</mat-icon> Triggering...
+          } @else {
+            <mat-icon>play_arrow</mat-icon> Trigger Manual Batch
+          }
         </button>
       </mat-card-actions>
     </mat-card>

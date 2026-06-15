@@ -1,0 +1,287 @@
+/* Container */
+.detail-container {
+  padding: 2rem;
+  max-width: 1000px;
+  margin: 0 auto;
+  font-family: 'Inter', 'Roboto', sans-serif;
+  color: #333;
+}
+
+/* Header */
+.detail-header {
+  margin-bottom: 2rem;
+}
+
+.back-link {
+  color: #64748b;
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  display: inline-block;
+  margin-bottom: 0.8rem;
+  transition: color 0.2s;
+}
+
+.back-link:hover {
+  color: #4f46e5;
+}
+
+.header-content h1 {
+  font-size: 2.2rem;
+  color: #1a1f36;
+  margin-bottom: 0.3rem;
+}
+
+.header-content p {
+  color: #697386;
+}
+
+/* Banner */
+.status-banner {
+  display: flex;
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  gap: 3rem;
+}
+
+.status-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.status-item .label {
+  font-size: 0.85rem;
+  color: #64748b;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-item .value {
+  font-weight: 600;
+  color: #0f172a;
+  font-size: 1.1rem;
+}
+
+/* Badges */
+.badge {
+  padding: 0.4rem 1rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  display: inline-block;
+}
+
+.type-badge {
+  background: #e0f2fe;
+  color: #0369a1;
+}
+
+.type-badge.freeze {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.status-badge {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.status-badge.pending {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+/* Grid Layout */
+.details-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 1.5rem;
+}
+
+/* Cards */
+.detail-card {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(12px);
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+  border: 1px solid #f1f5f9;
+}
+
+.detail-card.full-width {
+  grid-column: 1 / -1;
+}
+
+.mt-4 {
+  margin-top: 1.5rem;
+}
+
+.detail-card h3 {
+  color: #1e293b;
+  font-size: 1.1rem;
+  margin-top: 0;
+  margin-bottom: 1.2rem;
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 0.8rem;
+  display: flex;
+  align-items: center;
+}
+
+.icon {
+  margin-right: 8px;
+  font-size: 1.2rem;
+}
+
+/* Data Display */
+.data-group {
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.data-group:last-child {
+  margin-bottom: 0;
+}
+
+.data-label {
+  font-size: 0.85rem;
+  color: #64748b;
+  margin-bottom: 0.3rem;
+}
+
+.data-value {
+  font-size: 1.05rem;
+  color: #0f172a;
+}
+
+.divider {
+  border: 0;
+  height: 1px;
+  background: #f1f5f9;
+  margin: 1rem 0;
+}
+
+/* Typographic formatting */
+.font-mono {
+  font-family: monospace;
+  color: #4f46e5;
+  letter-spacing: 0.5px;
+  background: #f8fafc;
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+.font-bold {
+  font-weight: 600;
+}
+
+.highlight {
+  color: #10b981;
+  font-weight: 700;
+  font-size: 1.2rem;
+}
+
+/* Documents */
+.document-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.document-item {
+  display: flex;
+  align-items: center;
+  padding: 0.8rem;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
+}
+
+.document-item:last-child {
+  margin-bottom: 0;
+}
+
+.doc-icon {
+  margin-right: 10px;
+}
+
+.doc-name {
+  color: #3b82f6;
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.empty-text {
+  color: #94a3b8;
+  font-style: italic;
+  font-size: 0.9rem;
+}
+
+/* JSON Viewer */
+.json-viewer {
+  background: #1e293b;
+  color: #e2e8f0;
+  padding: 1.5rem;
+  border-radius: 8px;
+  font-family: monospace;
+  font-size: 0.9rem;
+  overflow-x: auto;
+  white-space: pre-wrap;
+}
+
+/* States */
+.state-container {
+  padding: 4rem 2rem;
+  text-align: center;
+  background: white;
+  border-radius: 12px;
+}
+
+.spinner {
+  width: 30px;
+  height: 30px;
+  border: 3px solid rgba(79, 70, 229, 0.2);
+  border-left-color: #4f46e5;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 1rem;
+}
+
+@keyframes spin {
+  100% { transform: rotate(360deg); }
+}
+
+.error-text {
+  color: #ef4444;
+  margin-bottom: 1.5rem;
+  font-weight: 500;
+}
+
+.btn-primary {
+  background: #4f46e5;
+  color: white;
+  border: none;
+  padding: 0.6rem 1.5rem;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .details-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .status-banner {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+}

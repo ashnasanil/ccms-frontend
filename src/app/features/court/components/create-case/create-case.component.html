@@ -1,0 +1,137 @@
+<div class="create-case-container">
+  
+    <!-- Form State -->
+    <div class="form-card">
+      <header class="form-header">
+        <h1>Create New Case</h1>
+        <p>Register a new court order for validation and processing.</p>
+      </header>
+
+      @if (errorMessage) {
+        <div class="error-banner">
+          ⚠️ {{ errorMessage }}
+        </div>
+      }
+
+      <form [formGroup]="caseForm" (ngSubmit)="onSubmit()" class="case-form">
+        
+        <!-- Complainant Section -->
+        <section class="form-section">
+          <h3>Complainant Details</h3>
+          <div class="form-group">
+            <label for="complainantName">Name <span class="required">*</span></label>
+            <input id="complainantName" type="text" formControlName="complainantName" placeholder="Enter complainant name"
+                   [class.is-invalid]="caseForm.get('complainantName')?.invalid && caseForm.get('complainantName')?.touched">
+            @if (caseForm.get('complainantName')?.invalid && caseForm.get('complainantName')?.touched) {
+              <span class="error-text">Complainant Name is required</span>
+            }
+          </div>
+        </section>
+
+        <!-- Defendant Section -->
+        <section class="form-section">
+          <h3>Defendant Details</h3>
+          <div class="grid-2">
+            <div class="form-group">
+              <label for="defendantName">Name <span class="required">*</span></label>
+              <input id="defendantName" type="text" formControlName="defendantName" placeholder="Enter defendant name"
+                     [class.is-invalid]="caseForm.get('defendantName')?.invalid && caseForm.get('defendantName')?.touched">
+            </div>
+            
+            <div class="form-group">
+              <label for="aadhaarNumber">Aadhaar Number <span class="required">*</span></label>
+              <input id="aadhaarNumber" type="text" formControlName="aadhaarNumber" placeholder="12-digit Aadhaar"
+                     [class.is-invalid]="caseForm.get('aadhaarNumber')?.invalid && caseForm.get('aadhaarNumber')?.touched">
+            </div>
+
+            <div class="form-group">
+              <label for="panNumber">PAN Number <span class="required">*</span></label>
+              <input id="panNumber" type="text" formControlName="panNumber" placeholder="10-character PAN"
+                     [class.is-invalid]="caseForm.get('panNumber')?.invalid && caseForm.get('panNumber')?.touched">
+            </div>
+
+            <div class="form-group">
+              <label for="accountNumber">Account Number <span class="required">*</span></label>
+              <input id="accountNumber" type="text" formControlName="accountNumber" placeholder="Bank Account Number"
+                     [class.is-invalid]="caseForm.get('accountNumber')?.invalid && caseForm.get('accountNumber')?.touched">
+            </div>
+
+            <div class="form-group full-width">
+              <label for="bankName">Bank Name <span class="required">*</span></label>
+              <input id="bankName" type="text" formControlName="bankName" placeholder="e.g. State Bank of India"
+                     [class.is-invalid]="caseForm.get('bankName')?.invalid && caseForm.get('bankName')?.touched">
+            </div>
+          </div>
+        </section>
+
+        <!-- Order Section -->
+        <section class="form-section">
+          <h3>Order Details</h3>
+          <div class="grid-2">
+            <div class="form-group">
+              <label for="orderType">Order Type <span class="required">*</span></label>
+              <select id="orderType" formControlName="orderType">
+                <option [value]="OrderType.FreezeAccount">Freeze Account</option>
+                <option [value]="OrderType.BalanceEnquiry">Balance Enquiry</option>
+              </select>
+            </div>
+
+            @if (caseForm.get('orderType')?.value == OrderType.FreezeAccount) {
+              <div class="form-group">
+                <label for="freezeAmount">Freeze Amount (₹) <span class="required">*</span></label>
+                <input id="freezeAmount" type="number" formControlName="freezeAmount" placeholder="Enter amount to freeze"
+                       [class.is-invalid]="caseForm.get('freezeAmount')?.invalid && caseForm.get('freezeAmount')?.touched">
+                @if (caseForm.get('freezeAmount')?.invalid && caseForm.get('freezeAmount')?.touched) {
+                  <span class="error-text">Freeze Amount is required for Freeze Accounts</span>
+                }
+              </div>
+            }
+          </div>
+        </section>
+
+        <!-- Documents Section -->
+        <section class="form-section">
+          <h3>Mandatory Documents</h3>
+          <p class="subtitle-text">Accepted formats: PDF, JPG, PNG (Max 5MB per file)</p>
+          
+          <div class="document-grid">
+            <div class="file-upload-group" [class.is-invalid]="!courtOrderFile && caseForm.touched">
+              <label>Court Order <span class="required">*</span></label>
+              <input type="file" accept=".pdf,.jpg,.jpeg,.png" (change)="onFileChange($event, 'courtOrder')">
+              @if (!courtOrderFile && caseForm.touched) {
+                <span class="error-text">Court Order is required</span>
+              }
+            </div>
+
+            <div class="file-upload-group" [class.is-invalid]="!aadhaarCopyFile && caseForm.touched">
+              <label>Aadhaar Copy <span class="required">*</span></label>
+              <input type="file" accept=".pdf,.jpg,.jpeg,.png" (change)="onFileChange($event, 'aadhaar')">
+              @if (!aadhaarCopyFile && caseForm.touched) {
+                <span class="error-text">Aadhaar Copy is required</span>
+              }
+            </div>
+
+            <div class="file-upload-group" [class.is-invalid]="!panCopyFile && caseForm.touched">
+              <label>PAN Copy <span class="required">*</span></label>
+              <input type="file" accept=".pdf,.jpg,.jpeg,.png" (change)="onFileChange($event, 'pan')">
+              @if (!panCopyFile && caseForm.touched) {
+                <span class="error-text">PAN Copy is required</span>
+              }
+            </div>
+          </div>
+        </section>
+
+        <div class="form-actions">
+          <button type="submit" class="btn-primary submit-btn" [disabled]="isSubmitting">
+            @if (isSubmitting) {
+              <span class="spinner-small"></span> Creating...
+            } @else {
+              Create Case
+            }
+          </button>
+        </div>
+
+      </form>
+    </div>
+
+</div>

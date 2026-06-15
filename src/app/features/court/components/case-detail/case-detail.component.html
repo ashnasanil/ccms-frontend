@@ -1,0 +1,131 @@
+<div class="detail-container">
+  <header class="detail-header">
+    <div class="header-content">
+      <a routerLink="/court/cases" class="back-link">← Back to Cases</a>
+      <h1>Case Details</h1>
+      @if (caseDetail) {
+        <p>Viewing comprehensive information for <strong>{{ caseDetail.caseNumber }}</strong></p>
+      }
+    </div>
+  </header>
+
+  @if (isLoading) {
+    <div class="state-container">
+      <div class="spinner"></div>
+      <p>Loading case data...</p>
+    </div>
+  } @else if (errorMessage) {
+    <div class="state-container error-state">
+      <p class="error-text">⚠️ {{ errorMessage }}</p>
+      <a routerLink="/court/cases" class="btn-primary">Return to List</a>
+    </div>
+  } @else if (caseDetail) {
+    
+    <!-- Top Status Banner -->
+    <div class="status-banner">
+      <div class="status-item">
+        <span class="label">Status</span>
+        <span class="badge status-badge" [class.pending]="caseDetail.status === 'Pending'">{{ caseDetail.status }}</span>
+      </div>
+      <div class="status-item">
+        <span class="label">Created On</span>
+        <span class="value">{{ caseDetail.createdDate | date:'mediumDate' }}</span>
+      </div>
+      <div class="status-item">
+        <span class="label">Order Type</span>
+        <span class="badge type-badge" [class.freeze]="caseDetail.orderType === 'FreezeAccount'">{{ caseDetail.orderType }}</span>
+      </div>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div class="details-grid">
+      
+      <!-- Parties Section -->
+      <section class="detail-card">
+        <h3><span class="icon">👥</span> Involved Parties</h3>
+        <div class="card-content">
+          <div class="data-group">
+            <span class="data-label">Complainant Name</span>
+            <span class="data-value">{{ caseDetail.complainantName }}</span>
+          </div>
+          <hr class="divider">
+          <div class="data-group">
+            <span class="data-label">Defendant Name</span>
+            <span class="data-value font-bold">{{ caseDetail.defendantName }}</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Identity & Banking (Masked by Backend) -->
+      <section class="detail-card">
+        <h3><span class="icon">🔒</span> Identity & Banking</h3>
+        <div class="card-content">
+          <div class="data-group">
+            <span class="data-label">Aadhaar Number</span>
+            <span class="data-value font-mono">{{ caseDetail.aadhaarNumber }}</span>
+          </div>
+          <div class="data-group">
+            <span class="data-label">PAN Number</span>
+            <span class="data-value font-mono">{{ caseDetail.panNumber }}</span>
+          </div>
+          <div class="data-group">
+            <span class="data-label">Account Number</span>
+            <span class="data-value font-mono">{{ caseDetail.accountNumber }}</span>
+          </div>
+          <div class="data-group">
+            <span class="data-label">Bank Name</span>
+            <span class="data-value">{{ caseDetail.bankName }}</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Order Specifics -->
+      <section class="detail-card">
+        <h3><span class="icon">⚖️</span> Order Specifics</h3>
+        <div class="card-content">
+          <div class="data-group">
+            <span class="data-label">Requested Action</span>
+            <span class="data-value">{{ caseDetail.orderType }}</span>
+          </div>
+          @if (caseDetail.freezeAmount) {
+            <div class="data-group">
+              <span class="data-label">Freeze Amount</span>
+              <span class="data-value highlight">₹{{ caseDetail.freezeAmount | number:'1.2-2' }}</span>
+            </div>
+          }
+        </div>
+      </section>
+
+      <!-- Documents -->
+      <section class="detail-card">
+        <h3><span class="icon">📄</span> Uploaded Documents</h3>
+        <div class="card-content">
+          @if (caseDetail.documents && caseDetail.documents.length > 0) {
+            <ul class="document-list">
+              @for (doc of caseDetail.documents; track doc) {
+                <li class="document-item">
+                  <span class="doc-icon">📎</span>
+                  <span class="doc-name">{{ doc }}</span>
+                </li>
+              }
+            </ul>
+          } @else {
+            <p class="empty-text">No documents attached to this case.</p>
+          }
+        </div>
+      </section>
+
+    </div>
+
+    <!-- Bank Response Section (If exists) -->
+    @if (caseDetail.bankResponse) {
+      <section class="detail-card full-width mt-4">
+        <h3><span class="icon">🏦</span> Official Bank Response</h3>
+        <div class="card-content">
+          <pre class="json-viewer">{{ caseDetail.bankResponse | json }}</pre>
+        </div>
+      </section>
+    }
+
+  }
+</div>
